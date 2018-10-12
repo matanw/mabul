@@ -1,16 +1,15 @@
 #include<stdio.h>
 
+#define BINARY_DIGIT_AMOUNT 8 * sizeof(int)
 
-/*todo: camelCase or not*/
-#define BINARY_DIGIT_AMOUNT 5 /*todo:choose number*/
-
-
-int get_digit(unsigned int num, int digitNum) {
-    return (num >> digitNum) & 1;
+/* get the digit-num -th (count starts from zero) digit of num in binary base*/
+int get_digit(unsigned int num, int digit_num) {
+    return (num >> digit_num) & 1;
 }
 
-void set_digit_one(unsigned int *num, int digitNum) {
-    *num |= (1 << digitNum);
+/* set the digit-num -th (count starts from zero) digit of num in binary base to one*/
+void set_digit_one(unsigned int *num, int digit_num) {
+    *num |= (1 << digit_num);
 }
 
 
@@ -24,19 +23,19 @@ void print_binary(unsigned int num) {
 unsigned int inner_my_add(unsigned int a, unsigned int b) {
     unsigned int sum = 0;
     int addition_to_next = 0;
-    int digitNum;
-    for (digitNum = 0; digitNum < BINARY_DIGIT_AMOUNT; digitNum++) {
-        int digit_sum = get_digit(a, digitNum) + get_digit(b, digitNum) + addition_to_next;
+    int digit_num;
+    for (digit_num = 0; digit_num < BINARY_DIGIT_AMOUNT; digit_num++) {
+        int digit_sum = get_digit(a, digit_num) + get_digit(b, digit_num) + addition_to_next;
         if (digit_sum == 0) {
             addition_to_next = 0;
         } else if (digit_sum == 1) {
-            set_digit_one(&sum, digitNum);
+            set_digit_one(&sum, digit_num);
             addition_to_next = 0;
         } else if (digit_sum == 2) {
             addition_to_next = 1;
         } else /*digit_sum is 3*/
         {
-            set_digit_one(&sum, digitNum);
+            set_digit_one(&sum, digit_num);
             addition_to_next = 1;
         }
     }

@@ -13,8 +13,9 @@ int palindrome(char s[]) {
             first++;
         while (*last == ' ' || *last == '\t')
             last--;
-        if (*first != *last)
+        if (*first != *last) {
             return 0;
+        }
         first++;
         last--;
     }
@@ -23,9 +24,12 @@ int palindrome(char s[]) {
 
 int main(void) {
     char s[MAX_LENGTH];
-    if (fgets(s, sizeof s, stdin)) {/*todo:remove if?*/
+    if (fgets(s, sizeof s, stdin)) {
         printf("input is \"%s\"\n", s);
         printf("result is %d", palindrome(s));
+    }
+    else{
+        printf("Error: string is empty");
     }
     return 0;
 }

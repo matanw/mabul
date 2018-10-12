@@ -61,9 +61,9 @@ unsigned int my_add(unsigned int a, unsigned int b) {
 int main() {
     unsigned int a, b;
     printf("Please enter two number: \n");
-    scanf("%d %d", &a, &b);
-    printf("numbers are %d ,%d\n", a, b);
-    printf("sum is :%d", my_add(a, b));
+    scanf("%u %u", &a, &b);
+    printf("numbers are %u ,%u\n", a, b);
+    printf("sum is :%u", my_add(a, b));
 
     return 0;
 }

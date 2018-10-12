@@ -7,9 +7,9 @@ List* init_list(){
     list->first=NULL;
     list->last=NULL;
     return list;
-};
+}
 
-List* add(List* list,void* val){
+void add(List* list,void* val){
     if(list->first==NULL){
         list->first=(Node*)malloc(sizeof(Node));
         list->first->val=val;
@@ -30,5 +30,15 @@ void for_each(List* list, void (*action)(void *))
         action(pos->val);
         pos=pos->next;
     }
+}
 
+void* search(List* list,void* val,int (*cmp)(void *,void *))
+{
+    Node* pos=list->first;
+    while(pos!=NULL){
+        if(cmp(pos->val,val)==0)
+            return pos->val;
+        pos=pos->next;
+    }
+    return NULL;
 }

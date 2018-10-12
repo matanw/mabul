@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ctype.h>
 #include "command_parse.h"
 
 int is_end_char(char ch) {
@@ -41,7 +42,7 @@ int get_next_token(char *input, int *index, char *output) {
     return 1;
 }
 
-int read_comma(char *input, int *index, char *place_to_token) {//todo:remove prints?
+int read_comma(char *input, int *index, char *place_to_token) {/*todo:remove prints?*/
     if (!get_next_token(input, index, place_to_token)) {
         printf("expected comma, but found end of string");
         return 0;
@@ -67,14 +68,25 @@ int parse_register(char *token, int *output) {
 int parse_number(char *token, int *output) {
     char *ptr;
     long num=strtol(token, &ptr, 10);
-    //todo: check that long in range
+    /*todo: check that long in range*/
     if (ptr == token || *ptr != '\0') {
         return 0;
     }
     *output = num;
     return 1;
 }
-int expect_next_char(char *input, int *index, char expected_char){//todo:rename
+int is_legal_label(char* token){
+    if(!isalpha(*(token++))){
+        return 0;
+    }
+    while (*token){
+        if(!isalnum(*(token++))){
+            return 0;
+        }
+    }
+    return 1;
+}
+int expect_next_char(char *input, int *index, char expected_char){/*todo:rename*/
     while (is_whitespace(input[*index])) {
         (*index)++;
     }

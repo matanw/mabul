@@ -12,6 +12,7 @@ struct list{
 typedef struct list List;
 
 List* init_list();
-List* add(List* list,void* val);
+void add(List* list,void* val);
 void for_each(List* list, void (*action)(void *));
 
+void* search(List* list,void* val,int (*cmp)(void *,void *));

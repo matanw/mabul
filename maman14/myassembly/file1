@@ -1,4 +1,6 @@
-sub @r1,@r4
-lala  : sub 1,1
+aa:sub @r1,@r4
+bb  : sub 1,1
+sub aa,bb
 sub @r1 ,1
 a:sub @r1,-5
+345:fcv

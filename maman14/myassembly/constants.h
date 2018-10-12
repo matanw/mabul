@@ -1,4 +1,4 @@
-
+/*TODO:splint this file*/
 #define MAX_LINE_LENGTH 80
 
 
@@ -9,15 +9,15 @@
 
 #define SOURCE_REGISTER_POSITION 7
 #define TARGET_REGISTER_POSITION 2
-#define INITIL_LINE_NUMBER 100
+#define INITIAL_CODE_ADDRESS 100
 
 #define NUMBER_POSITION 2
 
 
-//todo: a r e
+/*todo: a r e*/
 
 enum OPERATION {Mov=0,Cmp=1,Add=2,Sub=3,Not=4,Clr=5,Lea=6,Inc=7, Dec=8,
-    Jmp=9,Bne=10,Red=11, Prn=12,Jsr=13, Rst=14,Stop=15  };//todo:mov to enum.h
+    Jmp=9,Bne=10,Red=11, Prn=12,Jsr=13, Rst=14,Stop=15,Unknown=16  };
 typedef enum OPERATION operation;
 
 
@@ -38,3 +38,9 @@ struct argument_details{
     char *label;
 };
 typedef struct argument_details ArgumentDetails;
+
+struct label_data {
+    char *label;
+    int code_address;
+};
+typedef struct label_data LabelData;

@@ -1,4 +1,4 @@
-build:  myassembly.c myassembly.h bits_operations.c bits_operations.h command_parse.c command_parse.h constants.h list.c list.h first_stage.h first_stage.c debug_utils.c debug_utils.h
+build:  myassembly.c bits_operations.c bits_operations.h command_parse.c command_parse.h constants.h list.c list.h first_stage.h first_stage.c debug_utils.c debug_utils.h
 	gcc myassembly.c -o myassembly.o -c -ansi -Wall -pedantic
 	gcc bits_operations.c -o bits_operations.o -c -ansi -Wall -pedantic
 	gcc command_parse.c -o command_parse.o -c -ansi -Wall -pedantic

@@ -1,5 +1,4 @@
 #include "constants.h"
-#include "first_stage.h"
 #include "debug_utils.h"
 #include "bits_operations.h"
 

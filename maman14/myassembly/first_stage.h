@@ -1,3 +1,6 @@
+#ifndef INCLUDE_FIRST_STAGE_H
+#define INCLUDE_FIRST_STAGE_H
+
 #include "list.h"
 #include <stdio.h>
 
@@ -79,3 +82,5 @@ int get_two_registers_bits(ArgumentDetails *source_argument_details,
 
 int get_argument_bits(ArgumentDetails *argument_details,
                       int is_source);
+
+#endif

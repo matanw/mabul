@@ -1,3 +1,7 @@
+#ifndef INCLUDE_COMMAND_PARSE_H
+#define INCLUDE_COMMAND_PARSE_H
+
+
 int get_next_token(char *input, int *index, char *output);
 
 int read_comma(char *input, int *index, char *place_to_token);
@@ -18,3 +22,5 @@ int expect_next_char(char *input, int *index, char expected_char);/*todo:rename*
 
 
 int read_two_arguments(char *input, int *index, char *output1, char *output2);
+
+#endif

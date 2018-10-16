@@ -17,7 +17,7 @@ int is_comma(char ch) {
     return (ch == ',');
 }
 
-int is_special_char(char ch){
+int is_special_char(char ch) {
     return (ch == ':' || ch == ',');
 }
 
@@ -67,7 +67,7 @@ int parse_register(char *token, int *output) {
 
 int parse_number(char *token, int *output) {
     char *ptr;
-    long num=strtol(token, &ptr, 10);
+    long num = strtol(token, &ptr, 10);
     /*todo: check that long in range*/
     if (ptr == token || *ptr != '\0') {
         return 0;
@@ -75,24 +75,39 @@ int parse_number(char *token, int *output) {
     *output = num;
     return 1;
 }
-int is_legal_label(char* token){
-    if(!isalpha(*(token++))){
+
+int is_legal_label(char *token) {
+    if (!isalpha(*(token++))) {
         return 0;
     }
-    while (*token){
-        if(!isalnum(*(token++))){
+    while (*token) {
+        if (!isalnum(*(token++))) {
             return 0;
         }
     }
     return 1;
 }
-int expect_next_char(char *input, int *index, char expected_char){/*todo:rename*/
+
+int expect_next_char(char *input, int *index, char expected_char) {/*todo:rename*/
     while (is_whitespace(input[*index])) {
         (*index)++;
     }
-    if(input[*index]==expected_char){
+    if (input[*index] == expected_char) {
         (*index)++;
         return 1;
     }
     return 0;
+}
+
+int read_two_arguments(char *input, int *index, char *output1, char *output2) {
+    if (!get_next_token(input, index, output1)) {
+        return 0;
+    }
+    if (!expect_next_char(input, index, ',')) {
+        return 0;
+    }
+    if (!get_next_token(input, index, output2)) {
+        return 0;
+    }
+    return 1;
 }

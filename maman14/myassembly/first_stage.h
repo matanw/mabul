@@ -38,12 +38,15 @@ typedef struct label_data LabelData;
 
 struct first_stage_data {
     List *command_lines;
+    List *data_lines;
     List *label_datas;
     int original_line_number;
     int command_code_address;
+    int data_code_address;
     int is_in_error;
 };
 typedef struct first_stage_data FirstStageData;
+
 struct first_stage_output {
     List *command_lines;
     List *label_datas;
@@ -82,5 +85,7 @@ int get_two_registers_bits(ArgumentDetails *source_argument_details,
 
 int get_argument_bits(ArgumentDetails *argument_details,
                       int is_source);
+
+int line_is_comment(char *line, int *index);
 
 #endif

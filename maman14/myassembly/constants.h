@@ -13,5 +13,8 @@
 
 #define NUMBER_POSITION 2
 
+#define NUMBERS_PREFIX ".data"
+#define STRING_PREFIX ".string"
+
 
 /*todo: a r e*/

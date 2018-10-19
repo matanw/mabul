@@ -4,6 +4,7 @@
 #include "list.h"
 #include "command_parse.h"
 #include "debug_utils.h"
+#include "bits_operations.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -12,9 +13,11 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
     char line[MAX_LINE_LENGTH];
     FirstStageData first_stage_data;
     first_stage_data.command_lines = init_list();
+    first_stage_data.data_lines = init_list();
     first_stage_data.label_datas = init_list();
     first_stage_data.original_line_number = 0;
     first_stage_data.command_code_address = INITIAL_CODE_ADDRESS;
+    first_stage_data.data_code_address = 0;
     first_stage_data.is_in_error = 0;
     while (fgets(line, sizeof line, file)) {
         first_stage_data.original_line_number++;
@@ -25,11 +28,17 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
     return NULL;
 }
 
+int line_is_comment(char *line, int *index) {
+    return expect_next_char(line, index, ';');
+}
+
 void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
     int index;
     char token[MAX_LINE_LENGTH];
     index = 0;
-
+    if (line_is_comment(line, &index)) {
+        return;
+    }
     if (!get_next_token(line, &index, token))/*blank line*/
     {
         return;
@@ -39,7 +48,13 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
     {
         return;
     }
-    handle_operation(token, line, &index, first_stage_data);
+    if (strcmp(token, NUMBERS_PREFIX) == 0) {
+
+    } else if (strcmp(token, STRING_PREFIX) == 0) {
+
+    } else {
+        handle_operation(token, line, &index, first_stage_data);
+    }
 }
 
 void handle_label(char *token, char *line, int *index, FirstStageData *first_stage_data) {
@@ -61,6 +76,45 @@ void handle_label(char *token, char *line, int *index, FirstStageData *first_sta
     }
     label_data = get_label_data(get_string_copy(token), first_stage_data->command_code_address);
     add(first_stage_data->label_datas, label_data);
+}
+
+void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data) {
+/*
+ * rn
+ *  while t
+ *      if end string
+ *          rerun
+ *      rc ,if not
+ *          error
+ *      rn,if not
+ *          error
+ *
+ *
+ * */
+    int num;
+    if (!get_next_token(line, index, place_to_token)) {
+        printf("expected number, but found end of string");
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    if (!parse_number(place_to_token, &num)) {
+        printf("'%s' is not a number", place_to_token);
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    printf("number:%d\n", num);
+    while (1) {
+        if (!get_next_token(line, index, place_to_token)) {
+            /*end to string, valid state*/
+            return;
+        }
+        if (strcmp(place_to_token, ",") != 0) {
+            printf("expected comma but '%s' was found", place_to_token);
+            first_stage_data->is_in_error = 1;
+            return;
+        }
+
+    }
 }
 
 void handle_operation(char *token, char *line, int *index, FirstStageData *first_stage_data) {

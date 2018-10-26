@@ -1,17 +1,17 @@
 #include<stdio.h>
 #include <string.h>
-#define MAX_LENGTH 80
+#include <ctype.h>
+
+#define MAX_LENGTH 81
+
 int palindrome(char s[]) {
     int len = strlen(s);
     char *first = s;
     char *last = s + len - 1;
-    if (*last == '\n') {
-        last--;
-    }
     while (first < last) {
-        while (*first == ' ' || *first == '\t')
+        while (isspace(*first))
             first++;
-        while (*last == ' ' || *last == '\t')
+        while (isspace(*last))
             last--;
         if (*first != *last) {
             return 0;
@@ -22,14 +22,25 @@ int palindrome(char s[]) {
     return 1;
 }
 
+/* if string ends with \n, delete the '\n' character*/
+void delete_last_new_line(char *s) {
+    while (*s) {
+        s++;
+    }
+    if (*(s - 1) == '\n') {
+        *(s - 1) = '\0';
+    }
+}
+
 int main(void) {
     char s[MAX_LENGTH];
-    if (fgets(s, sizeof s, stdin)) {
-        printf("input is \"%s\"\n", s);
-        printf("result is %d", palindrome(s));
+    printf("Please insert a line:");
+    if (!fgets(s, sizeof s, stdin)) {
+        printf("Error while reading string\n");
+        return 1;
     }
-    else{
-        printf("Error: string is empty");
-    }
+    delete_last_new_line(s);
+    printf("input is \"%s\"\n", s);
+    printf("result is %d\n", palindrome(s));
     return 0;
 }

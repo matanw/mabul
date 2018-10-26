@@ -15,7 +15,7 @@ void set_digit_one(unsigned int *num, int digit_num) {
 
 void print_binary(unsigned int num) {
     int i;
-    for (i= BINARY_DIGIT_AMOUNT; i >= 0; i--)
+    for (i = BINARY_DIGIT_AMOUNT; i >= 0; i--)
         printf("%d", get_digit(num, i));
 }
 
@@ -62,7 +62,7 @@ int main() {
     printf("Please enter two number: \n");
     scanf("%u %u", &a, &b);
     printf("numbers are %u ,%u\n", a, b);
-    printf("sum is :%u", my_add(a, b));
+    printf("sum is :%u\n", my_add(a, b));
 
     return 0;
 }

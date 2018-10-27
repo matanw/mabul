@@ -60,12 +60,18 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data);
 
 void handle_label(char *token, char *line, int *index, FirstStageData *first_stage_data);
 
+void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data);
+
+void handle_string(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data);
+
 void handle_operation(char *token, char *line, int *index, FirstStageData *first_stage_data);
 
 void handle_operation_with_2_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data);
 
 
 CommandLine *get_command_line(int bits, int original_line_number, char *label);
+
+int *get_copy_of_int(int num);
 
 int compare_label_data_to_string(LabelData *label_data, char *label);
 

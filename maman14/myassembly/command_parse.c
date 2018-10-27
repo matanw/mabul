@@ -111,3 +111,26 @@ int read_two_arguments(char *input, int *index, char *output1, char *output2) {
     }
     return 1;
 }
+
+
+int get_string(char *input, int *index, char *token) {
+    while (is_whitespace(input[*index])) {
+        (*index)++;
+    }
+    if (input[*index] != '"') {
+        return 0;
+    }
+    while (1) {
+        (*index)++;
+        if (input[*index] == '"') {
+            (*index)++;
+            *token = '\0';
+            return 1;
+        }
+        if (is_end_char(input[*index])) {
+            return 0;
+        }
+        *token = input[*index];
+        token++;
+    }
+}

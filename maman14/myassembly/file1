@@ -6,3 +6,5 @@ a:sub @r1,-5
 345:fcv
 123:sub @r1,-5
 asd:789
+.data 4, 5, 6, 8
+.string "abc d"

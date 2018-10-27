@@ -28,7 +28,7 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
 
     print_command_lines(first_stage_data.command_lines);
     print_label_datas(first_stage_data.label_datas);
-
+    print_nums(first_stage_data.data_lines);
 
     free_list(first_stage_data.command_lines, (void (*)(void *))
             free_command_line_indirect);
@@ -36,7 +36,7 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
             free_label_data_indirect);
     free_list(first_stage_data.data_lines, (void (*)(void *))
             NULL);
-    
+
     return NULL;
 }
 
@@ -62,9 +62,9 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
         return;
     }
     if (strcmp(token, NUMBERS_PREFIX) == 0) {
-
+        handle_numbers(token, line, &index, first_stage_data);
     } else if (strcmp(token, STRING_PREFIX) == 0) {
-
+        handle_string(token, line, &index, first_stage_data);
     } else {
         handle_operation(token, line, &index, first_stage_data);
     }
@@ -92,18 +92,6 @@ void handle_label(char *token, char *line, int *index, FirstStageData *first_sta
 }
 
 void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data) {
-/*
- * rn
- *  while t
- *      if end string
- *          rerun
- *      rc ,if not
- *          error
- *      rn,if not
- *          error
- *
- *
- * */
     int num;
     if (!get_next_token(line, index, place_to_token)) {
         printf("expected number, but found end of string");
@@ -115,7 +103,8 @@ void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData
         first_stage_data->is_in_error = 1;
         return;
     }
-    printf("number:%d\n", num);
+    add(first_stage_data->data_lines, get_copy_of_int(num));
+    first_stage_data->data_code_address++;
     while (1) {
         if (!get_next_token(line, index, place_to_token)) {
             /*end to string, valid state*/
@@ -127,6 +116,39 @@ void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData
             return;
         }
 
+        if (!get_next_token(line, index, place_to_token)) {
+            printf("expected number, but found end of string");
+            first_stage_data->is_in_error = 1;
+            return;
+        }
+        if (!parse_number(place_to_token, &num)) {
+            printf("'%s' is not a number", place_to_token);
+            first_stage_data->is_in_error = 1;
+            return;
+        }
+        add(first_stage_data->data_lines, get_copy_of_int(num));
+        first_stage_data->data_code_address++;
+    }
+}
+
+void handle_string(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data) {
+    char *c;
+    if (!get_string(line, index, place_to_token)) {
+        printf("error while reading string");
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    if (get_next_token(line, index, place_to_token)) {
+        printf("expected end of line after string, but found '%s'", place_to_token);
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    c = place_to_token;
+    printf("\n token-[%s]\n", place_to_token);
+    while (*c) {
+        add(first_stage_data->data_lines, get_copy_of_int((int) *c));
+        first_stage_data->data_code_address++;
+        c++;
     }
 }
 
@@ -299,6 +321,12 @@ LabelData *get_label_data(char *label, int code_address) {
     label_data->label = label;
     label_data->code_address = code_address;
     return label_data;
+}
+
+int *get_copy_of_int(int num) {
+    int *res = malloc(sizeof(int));
+    *res = num;
+    return res;
 }
 
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,

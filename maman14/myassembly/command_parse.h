@@ -23,4 +23,7 @@ int expect_next_char(char *input, int *index, char expected_char);/*todo:rename*
 
 int read_two_arguments(char *input, int *index, char *output1, char *output2);
 
+
+int get_string(char *input, int *index, char *token);
+
 #endif

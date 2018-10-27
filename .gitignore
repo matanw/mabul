@@ -21,4 +21,6 @@ myset-tzvika-14/
 temp_code/
 *.pdf
 tests/
+toSend*
+*screenshots*
 

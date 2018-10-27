@@ -11,6 +11,7 @@
 
 FirstStageOutput *do_first_stage_for_file(FILE *file) {
     char line[MAX_LINE_LENGTH];
+
     FirstStageData first_stage_data;
     first_stage_data.command_lines = init_list();
     first_stage_data.data_lines = init_list();
@@ -19,14 +20,26 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
     first_stage_data.command_code_address = INITIAL_CODE_ADDRESS;
     first_stage_data.data_code_address = 0;
     first_stage_data.is_in_error = 0;
+
     while (fgets(line, sizeof line, file)) {
         first_stage_data.original_line_number++;
         do_first_stage_for_line(line, &first_stage_data);
     }
+
     print_command_lines(first_stage_data.command_lines);
     print_label_datas(first_stage_data.label_datas);
+
+
+    free_list(first_stage_data.command_lines, (void (*)(void *))
+            free_command_line_indirect);
+    free_list(first_stage_data.label_datas, (void (*)(void *))
+            free_label_data_indirect);
+    free_list(first_stage_data.data_lines, (void (*)(void *))
+            NULL);
+    
     return NULL;
 }
+
 
 int line_is_comment(char *line, int *index) {
     return expect_next_char(line, index, ';');
@@ -323,4 +336,16 @@ int get_argument_bits(ArgumentDetails *argument_details,
     }
     put_bits_int(&bits, 0, ARE_POSITION);/*todo:*/
     return bits;
+}
+
+
+/*todo:move*/
+void free_label_data_indirect(LabelData *label_data) {
+    if (label_data->label != NULL)
+        free(label_data->label);
+}
+
+void free_command_line_indirect(CommandLine *command_line) {
+    if (command_line->label != NULL)
+        free(command_line->label);
 }

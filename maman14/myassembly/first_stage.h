@@ -88,4 +88,10 @@ int get_argument_bits(ArgumentDetails *argument_details,
 
 int line_is_comment(char *line, int *index);
 
+
+/*todo:move*/
+void free_label_data_indirect(LabelData *label_data);
+
+void free_command_line_indirect(CommandLine *command_line);
+
 #endif

@@ -8,7 +8,9 @@ typedef enum OPERATION {
     Mov = 0, Cmp = 1, Add = 2, Sub = 3, Not = 4, Clr = 5, Lea = 6, Inc = 7, Dec = 8,
     Jmp = 9, Bne = 10, Red = 11, Prn = 12, Jsr = 13, Rst = 14, Stop = 15, Unknown = 16
 } operation;
-
+typedef enum SECTION_TYPE {
+    Command = 1, Data = 2
+} section_type;
 
 typedef enum ADDRESSING_METHOD {
     ImmediateAddressing = 1, DirectAddressing = 3, RegisterAddressing = 5
@@ -29,11 +31,19 @@ typedef struct argument_details {
 typedef struct label_data {
     char *label;
     int code_address;
+    section_type section_type;
 } LabelData;
+
+typedef struct shared_label {
+    char *label;
+    int original_code_address;
+} SharedLabel;
 typedef struct first_stage_data {
     List *command_lines;
     List *data_lines;
     List *label_datas;
+    List *entries;
+    List *external;
     int original_line_number;
     int command_code_address;
     int data_code_address;
@@ -52,6 +62,7 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data);
 
 void handle_label(char *token, char *line, int *index, FirstStageData *first_stage_data);
 
+void handle_shared_label(char *line, char *place_to_token, int *index, List *list, FirstStageData *first_stage_data);
 
 void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data);
 
@@ -69,8 +80,9 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Firs
 
 void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data);
 
-
 CommandLine *get_command_line(int bits, int original_line_number, char *label);
+
+SharedLabel *get_shared_label(char *label, int original_code_address);
 
 int *get_copy_of_int(int num);
 

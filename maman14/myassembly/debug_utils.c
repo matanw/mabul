@@ -20,16 +20,21 @@ void print_num(int *num) {
     printf("%d\n", *num);
 }
 
-void print_command_lines(List *command_lines) {
-    for_each(command_lines, (void (*)(void *)) print_command_line);
+void print_shared_label(SharedLabel *shared_label) {
+    printf("%s, line %d\n", shared_label->label, shared_label->original_code_address);
 }
 
-void print_label_datas(List *label_datas) {
-    for_each(label_datas, (void (*)(void *)) print_label_data);
-}
-
-void print_nums(List *nums) {
-    for_each(nums, (void (*)(void *)) print_num);
+void print_first_stage_data(FirstStageData *first_stage_data) {
+    printf("command_lines:\n");
+    for_each(first_stage_data->command_lines, (void (*)(void *)) print_command_line);
+    printf("labels :\n");
+    for_each(first_stage_data->label_datas, (void (*)(void *)) print_label_data);
+    printf("data_lines:\n");
+    for_each(first_stage_data->data_lines, (void (*)(void *)) print_num);
+    printf("entries:\n");
+    for_each(first_stage_data->entries, (void (*)(void *)) print_shared_label);
+    printf("externals:\n");
+    for_each(first_stage_data->external, (void (*)(void *)) print_shared_label);
 }
 
 

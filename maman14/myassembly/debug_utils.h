@@ -10,10 +10,8 @@ void print_label_data(LabelData *label_data);
 
 void print_num(int *num);
 
-void print_command_lines(List *command_lines);
+void print_shared_label(SharedLabel *shared_label);
 
-void print_label_datas(List *label_datas);
-
-void print_nums(List *nums);
+void print_first_stage_data(FirstStageData *first_stage_data);
 
 #endif

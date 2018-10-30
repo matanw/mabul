@@ -15,6 +15,8 @@
 
 #define NUMBERS_PREFIX ".data"
 #define STRING_PREFIX ".string"
+#define ENTRY_PREFIX ".entry"
+#define EXTERNAL_PREFIX ".extern"
 
 
 /*todo: a r e*/

@@ -16,6 +16,8 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
     first_stage_data.command_lines = init_list();
     first_stage_data.data_lines = init_list();
     first_stage_data.label_datas = init_list();
+    first_stage_data.entries = init_list();
+    first_stage_data.external = init_list();
     first_stage_data.original_line_number = 0;
     first_stage_data.command_code_address = INITIAL_CODE_ADDRESS;
     first_stage_data.data_code_address = 0;
@@ -26,15 +28,18 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
         do_first_stage_for_line(line, &first_stage_data);
     }
 
-    print_command_lines(first_stage_data.command_lines);
-    print_label_datas(first_stage_data.label_datas);
-    print_nums(first_stage_data.data_lines);
+    print_first_stage_data(&first_stage_data);
 
     free_list(first_stage_data.command_lines, (void (*)(void *))
             free_command_line_indirect);
     free_list(first_stage_data.label_datas, (void (*)(void *))
             free_label_data_indirect);
     free_list(first_stage_data.data_lines, (void (*)(void *))
+            NULL);
+
+    free_list(first_stage_data.entries, (void (*)(void *))
+            NULL);
+    free_list(first_stage_data.external, (void (*)(void *))
             NULL);
 
     return NULL;
@@ -65,8 +70,31 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
         handle_numbers(token, line, &index, first_stage_data);
     } else if (strcmp(token, STRING_PREFIX) == 0) {
         handle_string(token, line, &index, first_stage_data);
+    } else if (strcmp(token, ENTRY_PREFIX) == 0) {
+        handle_shared_label(line, token, &index, first_stage_data->entries, first_stage_data);
+    } else if (strcmp(token, EXTERNAL_PREFIX) == 0) {
+        handle_shared_label(line, token, &index, first_stage_data->external, first_stage_data);
     } else {
         handle_operation(token, line, &index, first_stage_data);
+    }
+}
+
+void handle_shared_label(char *line, char *place_to_token, int *index, List *list, FirstStageData *first_stage_data) {
+    if (!get_next_token(line, index, place_to_token)) {
+        printf("expected label name, found end of string");
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    if (!is_legal_label(place_to_token)) {
+        printf("'%s' is not a legal label", place_to_token);
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    add(list, get_shared_label(get_string_copy(place_to_token), first_stage_data->original_line_number));
+    if (get_next_token(line, index, place_to_token)) {
+        printf("expected end of string but found '%s'", place_to_token);
+        first_stage_data->is_in_error = 1;
+        return;
     }
 }
 
@@ -174,7 +202,6 @@ void handle_operation(char *token, char *line, int *index, FirstStageData *first
     }
 }
 
-
 int get_arguments_number(operation op) {
     switch (op) {
         case Mov:
@@ -276,7 +303,6 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Firs
                          argument_details.label));
     first_stage_data->command_code_address++;
 }
-
 
 void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data) {
     char text_in_end_of_line[MAX_LINE_LENGTH];
@@ -389,6 +415,14 @@ LabelData *get_label_data(char *label, int code_address) {
     label_data->label = label;
     label_data->code_address = code_address;
     return label_data;
+}
+
+SharedLabel *get_shared_label(char *label, int original_code_address) {
+    SharedLabel *sharedLabel;
+    sharedLabel = malloc(sizeof(sharedLabel));
+    sharedLabel->label = label;
+    sharedLabel->original_code_address = original_code_address;
+    return sharedLabel;
 }
 
 int *get_copy_of_int(int num) {

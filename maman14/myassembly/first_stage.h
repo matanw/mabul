@@ -18,7 +18,7 @@ typedef enum ADDRESSING_METHOD {
 
 typedef struct command_line {
     int bits;
-    int original_line_number;
+    int source_line_number;
     char *label;
 } CommandLine;
 
@@ -36,7 +36,7 @@ typedef struct label_data {
 
 typedef struct shared_label {
     char *label;
-    int original_code_address;
+    int source_line_number;
 } SharedLabel;
 typedef struct first_stage_data {
     List *command_lines;
@@ -44,7 +44,7 @@ typedef struct first_stage_data {
     List *label_datas;
     List *entries;
     List *external;
-    int original_line_number;
+    int source_line_number;
     int is_in_error;
 } FirstStageData;
 
@@ -78,9 +78,9 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Firs
 
 void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data);
 
-CommandLine *get_command_line(int bits, int original_line_number, char *label);
+CommandLine *get_command_line(int bits, int source_line_number, char *label);
 
-SharedLabel *get_shared_label(char *label, int original_code_address);
+SharedLabel *get_shared_label(char *label, int source_line_number);
 
 int *get_copy_of_int(int num);
 

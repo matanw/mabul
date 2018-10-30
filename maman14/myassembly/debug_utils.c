@@ -4,7 +4,7 @@
 
 
 void print_command_line(CommandLine *commandLine) {
-    printf("%d:", commandLine->original_line_number);
+    printf("%d:", commandLine->source_line_number);
     print_bits_int(commandLine->bits);
     if (commandLine->label != NULL) {
         printf(" , label %s", commandLine->label);
@@ -21,7 +21,7 @@ void print_num(int *num) {
 }
 
 void print_shared_label(SharedLabel *shared_label) {
-    printf("%s, line %d\n", shared_label->label, shared_label->original_code_address);
+    printf("%s, line %d\n", shared_label->label, shared_label->source_line_number);
 }
 
 void print_first_stage_data(FirstStageData *first_stage_data) {

@@ -18,11 +18,11 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
     first_stage_data.label_datas = init_list();
     first_stage_data.entries = init_list();
     first_stage_data.external = init_list();
-    first_stage_data.original_line_number = 0;
+    first_stage_data.source_line_number = 0;
     first_stage_data.is_in_error = 0;
 
     while (fgets(line, sizeof line, file)) {
-        first_stage_data.original_line_number++;
+        first_stage_data.source_line_number++;
         do_first_stage_for_line(line, &first_stage_data);
     }
 
@@ -88,7 +88,7 @@ void handle_shared_label(char *line, char *place_to_token, int *index, List *lis
         first_stage_data->is_in_error = 1;
         return;
     }
-    add(list, get_shared_label(get_string_copy(place_to_token), first_stage_data->original_line_number));
+    add(list, get_shared_label(get_string_copy(place_to_token), first_stage_data->source_line_number));
     if (get_next_token(line, index, place_to_token)) {
         printf("expected end of string but found '%s'", place_to_token);
         first_stage_data->is_in_error = 1;
@@ -247,22 +247,22 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Fir
         return;
     }
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details, 0);/*todo: are*/
-    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
+    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->source_line_number, NULL));
     if (source_argument_details.ad_method == RegisterAddressing &&
         target_argument_details.ad_method == RegisterAddressing) {
         int registers_bits = get_two_registers_bits(&source_argument_details,
                                                     &target_argument_details);
         add(first_stage_data->command_lines,
-            get_command_line(registers_bits, first_stage_data->original_line_number, NULL));
+            get_command_line(registers_bits, first_stage_data->source_line_number, NULL));
     } else {
         int source_bits, target_bits;
         source_bits = get_argument_bits(&source_argument_details, 1);
         add(first_stage_data->command_lines,
-            get_command_line(source_bits, first_stage_data->original_line_number,
+            get_command_line(source_bits, first_stage_data->source_line_number,
                              source_argument_details.label));
         target_bits = get_argument_bits(&target_argument_details, 0);
         add(first_stage_data->command_lines,
-            get_command_line(target_bits, first_stage_data->original_line_number,
+            get_command_line(target_bits, first_stage_data->source_line_number,
                              target_argument_details.label));
     }
 }
@@ -287,10 +287,10 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Firs
         return;
     }
     command_bits = get_command_bits(op, NULL, &argument_details, 0);/*todo: are*/
-    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
+    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->source_line_number, NULL));
     argument_bits = get_argument_bits(&argument_details, 0);
     add(first_stage_data->command_lines,
-        get_command_line(argument_bits, first_stage_data->original_line_number,
+        get_command_line(argument_bits, first_stage_data->source_line_number,
                          argument_details.label));
 }
 
@@ -304,13 +304,13 @@ void handle_operation_without_arguments(operation op, char *line, int *index, Fi
         return;
     }
     command_bits = get_command_bits(op, NULL, NULL, 0);/*todo: are*/
-    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
+    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->source_line_number, NULL));
 }
 
-CommandLine *get_command_line(int bits, int original_line_number, char *label) {
+CommandLine *get_command_line(int bits, int source_line_number, char *label) {
     CommandLine *command_line = (CommandLine *) malloc(sizeof(CommandLine));
     command_line->bits = bits;
-    command_line->original_line_number = original_line_number;
+    command_line->source_line_number = source_line_number;
     command_line->label = label;
     return command_line;
 }
@@ -406,11 +406,11 @@ LabelData *get_label_data(char *label, int code_address) {
     return label_data;
 }
 
-SharedLabel *get_shared_label(char *label, int original_code_address) {
+SharedLabel *get_shared_label(char *label, int source_line_number) {
     SharedLabel *sharedLabel;
     sharedLabel = malloc(sizeof(sharedLabel));
     sharedLabel->label = label;
-    sharedLabel->original_code_address = original_code_address;
+    sharedLabel->source_line_number = source_line_number;
     return sharedLabel;
 }
 

@@ -19,8 +19,6 @@ FirstStageOutput *do_first_stage_for_file(FILE *file) {
     first_stage_data.entries = init_list();
     first_stage_data.external = init_list();
     first_stage_data.original_line_number = 0;
-    first_stage_data.command_code_address = INITIAL_CODE_ADDRESS;
-    first_stage_data.data_code_address = 0;
     first_stage_data.is_in_error = 0;
 
     while (fgets(line, sizeof line, file)) {
@@ -115,7 +113,7 @@ void handle_label(char *token, char *line, int *index, FirstStageData *first_sta
         first_stage_data->is_in_error = 1;
         return;
     }
-    label_data = get_label_data(get_string_copy(token), first_stage_data->command_code_address);
+    label_data = get_label_data(get_string_copy(token), first_stage_data->command_lines->count);
     add(first_stage_data->label_datas, label_data);
 }
 
@@ -132,7 +130,6 @@ void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData
         return;
     }
     add(first_stage_data->data_lines, get_copy_of_int(num));
-    first_stage_data->data_code_address++;
     while (1) {
         if (!get_next_token(line, index, place_to_token)) {
             /*end to string, valid state*/
@@ -155,7 +152,6 @@ void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData
             return;
         }
         add(first_stage_data->data_lines, get_copy_of_int(num));
-        first_stage_data->data_code_address++;
     }
 }
 
@@ -175,7 +171,6 @@ void handle_string(char *place_to_token, char *line, int *index, FirstStageData 
     printf("\n token-[%s]\n", place_to_token);
     while (*c) {
         add(first_stage_data->data_lines, get_copy_of_int((int) *c));
-        first_stage_data->data_code_address++;
         c++;
     }
 }
@@ -253,14 +248,12 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Fir
     }
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details, 0);/*todo: are*/
     add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
-    first_stage_data->command_code_address++;
     if (source_argument_details.ad_method == RegisterAddressing &&
         target_argument_details.ad_method == RegisterAddressing) {
         int registers_bits = get_two_registers_bits(&source_argument_details,
                                                     &target_argument_details);
         add(first_stage_data->command_lines,
             get_command_line(registers_bits, first_stage_data->original_line_number, NULL));
-        first_stage_data->command_code_address += 1;
     } else {
         int source_bits, target_bits;
         source_bits = get_argument_bits(&source_argument_details, 1);
@@ -271,7 +264,6 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Fir
         add(first_stage_data->command_lines,
             get_command_line(target_bits, first_stage_data->original_line_number,
                              target_argument_details.label));
-        first_stage_data->command_code_address += 2;
     }
 }
 
@@ -296,12 +288,10 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Firs
     }
     command_bits = get_command_bits(op, NULL, &argument_details, 0);/*todo: are*/
     add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
-    first_stage_data->command_code_address++;
     argument_bits = get_argument_bits(&argument_details, 0);
     add(first_stage_data->command_lines,
         get_command_line(argument_bits, first_stage_data->original_line_number,
                          argument_details.label));
-    first_stage_data->command_code_address++;
 }
 
 void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data) {
@@ -315,7 +305,6 @@ void handle_operation_without_arguments(operation op, char *line, int *index, Fi
     }
     command_bits = get_command_bits(op, NULL, NULL, 0);/*todo: are*/
     add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
-    first_stage_data->command_code_address++;
 }
 
 CommandLine *get_command_line(int bits, int original_line_number, char *label) {

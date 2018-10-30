@@ -6,6 +6,7 @@ List *init_list() {
     List *list = (List *) malloc(sizeof(List));
     list->first = NULL;
     list->last = NULL;
+    list->count = 0;
     return list;
 }
 
@@ -21,6 +22,7 @@ void add(List *list, void *val) {
         list->last->val = val;
         list->last->next = NULL;
     }
+    list->count++;
 }
 
 void for_each(List *list, void (*action)(void *)) {

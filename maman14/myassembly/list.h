@@ -10,6 +10,7 @@ typedef struct node Node;
 struct list {
     Node *first;
     Node *last;
+    int count;
 };
 typedef struct list List;
 

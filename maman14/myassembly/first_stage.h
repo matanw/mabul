@@ -45,8 +45,6 @@ typedef struct first_stage_data {
     List *entries;
     List *external;
     int original_line_number;
-    int command_code_address;
-    int data_code_address;
     int is_in_error;
 } FirstStageData;
 

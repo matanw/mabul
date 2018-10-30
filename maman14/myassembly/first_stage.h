@@ -16,27 +16,23 @@ enum ADDRESSING_METHOD {
 };
 typedef enum ADDRESSING_METHOD addressing_method;
 
-struct command_line {
+typedef struct command_line {
     int bits;
     int original_line_number;
     char *label;
-};
-typedef struct command_line CommandLine;
+} CommandLine;
 
-struct argument_details {
+typedef struct argument_details {
     addressing_method ad_method;
     int num;
     char *label;
-};
-typedef struct argument_details ArgumentDetails;
+} ArgumentDetails;
 
-struct label_data {
+typedef struct label_data {
     char *label;
     int code_address;
-};
-typedef struct label_data LabelData;
-
-struct first_stage_data {
+} LabelData;
+typedef struct first_stage_data {
     List *command_lines;
     List *data_lines;
     List *label_datas;
@@ -44,14 +40,12 @@ struct first_stage_data {
     int command_code_address;
     int data_code_address;
     int is_in_error;
-};
-typedef struct first_stage_data FirstStageData;
+} FirstStageData;
 
-struct first_stage_output {
+typedef struct first_stage_output {
     List *command_lines;
     List *label_datas;
-};
-typedef struct first_stage_output FirstStageOutput;
+} FirstStageOutput;
 
 
 FirstStageOutput *do_first_stage_for_file(FILE *file);

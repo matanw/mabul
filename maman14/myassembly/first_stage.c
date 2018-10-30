@@ -161,10 +161,40 @@ void handle_operation(char *token, char *line, int *index, FirstStageData *first
         first_stage_data->is_in_error = 1;
         return;
     }
-    arguments_num = 2;/*todo:func*/
+    arguments_num = get_arguments_number(op);
     switch (arguments_num) {
         case 2:
             handle_operation_with_2_arguments(op, line, index, first_stage_data);
+            break;
+        case 1:
+            handle_operation_with_1_argument(op, line, index, first_stage_data);
+            break;
+        default:
+            handle_operation_without_arguments(op, line, index, first_stage_data);
+    }
+}
+
+
+int get_arguments_number(operation op) {
+    switch (op) {
+        case Mov:
+        case Cmp:
+        case Add:
+        case Sub:
+        case Lea:
+            return 2;
+        case Not:
+        case Clr:
+        case Inc:
+        case Dec:
+        case Jmp:
+        case Bne:
+        case Red:
+        case Prn:
+        case Jsr:
+            return 1;
+        default:
+            return 0;
     }
 }
 
@@ -194,11 +224,6 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Fir
         first_stage_data->is_in_error = 1;
         return;
     }
-    /*todo:delete this 3 printf
-    printf("op:%d\n", op);
-    printf("0: am %d num %d\n", source_argument_details.ad_method, source_argument_details.num);
-    printf("1: am %d num %d\n", target_argument_details.ad_method, target_argument_details.num);
-    */
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details, 0);/*todo: are*/
     add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
     first_stage_data->command_code_address++;
@@ -223,6 +248,49 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Fir
     }
 }
 
+void handle_operation_with_1_argument(operation op, char *line, int *index, FirstStageData *first_stage_data) {
+    char argument[MAX_LINE_LENGTH];
+    int command_bits, argument_bits;
+    ArgumentDetails argument_details;
+    if (!get_next_token(line, index, argument)) {
+        printf("except to argument but there isn't");
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    if (!fill_argument_details(argument, &argument_details)) {
+        printf(" '%s' is not register, number, or valid label name\n", argument);
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    if (get_next_token(line, index, argument)) {/*todo:another var?*/
+        printf(" excepted end of line but found %s\n", argument);
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    command_bits = get_command_bits(op, NULL, &argument_details, 0);/*todo: are*/
+    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
+    first_stage_data->command_code_address++;
+    argument_bits = get_argument_bits(&argument_details, 0);
+    add(first_stage_data->command_lines,
+        get_command_line(argument_bits, first_stage_data->original_line_number,
+                         argument_details.label));
+    first_stage_data->command_code_address++;
+}
+
+
+void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data) {
+    char text_in_end_of_line[MAX_LINE_LENGTH];
+    int command_bits;
+
+    if (get_next_token(line, index, text_in_end_of_line)) {
+        printf(" excepted end of line but found %s\n", text_in_end_of_line);
+        first_stage_data->is_in_error = 1;
+        return;
+    }
+    command_bits = get_command_bits(op, NULL, NULL, 0);/*todo: are*/
+    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->original_line_number, NULL));
+    first_stage_data->command_code_address++;
+}
 
 CommandLine *get_command_line(int bits, int original_line_number, char *label) {
     CommandLine *command_line = (CommandLine *) malloc(sizeof(CommandLine));
@@ -252,7 +320,7 @@ operation get_operation(char *op) {
     if (strcmp("not", op) == 0) {
         return Not;
     }
-    if (strcmp("Clr", op) == 0) {
+    if (strcmp("clr", op) == 0) {
         return Clr;
     }
     if (strcmp("lea", op) == 0) {
@@ -332,12 +400,17 @@ int *get_copy_of_int(int num) {
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,
                      ArgumentDetails *target_argument_details, int are) {
     int bits = 0;
-    put_bits_int(&bits, source_argument_details
-            ->ad_method, SOURCE_ADDRESSING_POSITION);
     put_bits_int(&bits, op, OP_CODE_POSITION);
-    put_bits_int(&bits, target_argument_details
-            ->ad_method, TARGET_ADDRESSING_POSITION);
-    put_bits_int(&bits, are, ARE_POSITION);
+    if (source_argument_details != NULL) {
+        put_bits_int(&bits, source_argument_details
+                ->ad_method, SOURCE_ADDRESSING_POSITION);
+        put_bits_int(&bits, op, OP_CODE_POSITION);
+    }
+    if (target_argument_details != NULL) {
+        put_bits_int(&bits, target_argument_details
+                ->ad_method, TARGET_ADDRESSING_POSITION);
+        put_bits_int(&bits, are, ARE_POSITION);
+    }
     return bits;
 }
 

@@ -60,13 +60,22 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data);
 
 void handle_label(char *token, char *line, int *index, FirstStageData *first_stage_data);
 
+
 void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data);
 
 void handle_string(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data);
 
 void handle_operation(char *token, char *line, int *index, FirstStageData *first_stage_data);
 
+int get_arguments_number(operation op);
+
 void handle_operation_with_2_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data);
+
+
+void handle_operation_with_1_argument(operation op, char *line, int *index, FirstStageData *first_stage_data);
+
+
+void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data);
 
 
 CommandLine *get_command_line(int bits, int original_line_number, char *label);

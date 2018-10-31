@@ -24,17 +24,17 @@ void print_shared_label(SharedLabel *shared_label) {
     printf("%s, line %d\n", shared_label->label, shared_label->source_line_number);
 }
 
-void print_first_stage_data(FirstStageData *first_stage_data) {
+void print_program_information(ProgramInformation *program_information) {
     printf("command_lines:\n");
-    for_each(first_stage_data->command_lines, (void (*)(void *)) print_command_line);
+    for_each(program_information->command_lines, (void (*)(void *)) print_command_line);
     printf("labels :\n");
-    for_each(first_stage_data->label_datas, (void (*)(void *)) print_label_data);
+    for_each(program_information->label_datas, (void (*)(void *)) print_label_data);
     printf("data_lines:\n");
-    for_each(first_stage_data->data_lines, (void (*)(void *)) print_num);
+    for_each(program_information->data_lines, (void (*)(void *)) print_num);
     printf("entries:\n");
-    for_each(first_stage_data->entries, (void (*)(void *)) print_shared_label);
+    for_each(program_information->entries, (void (*)(void *)) print_shared_label);
     printf("externals:\n");
-    for_each(first_stage_data->external, (void (*)(void *)) print_shared_label);
+    for_each(program_information->external, (void (*)(void *)) print_shared_label);
 }
 
 

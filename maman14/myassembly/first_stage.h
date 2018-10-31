@@ -38,7 +38,7 @@ typedef struct shared_label {
     char *label;
     int source_line_number;
 } SharedLabel;
-typedef struct first_stage_data {
+typedef struct program_information {
     List *command_lines;
     List *data_lines;
     List *label_datas;
@@ -46,7 +46,7 @@ typedef struct first_stage_data {
     List *external;
     int source_line_number;
     int is_in_error;
-} FirstStageData;
+} ProgramInformation;
 
 typedef struct first_stage_output {
     List *command_lines;
@@ -56,28 +56,28 @@ typedef struct first_stage_output {
 
 FirstStageOutput *do_first_stage_for_file(FILE *file);
 
-void do_first_stage_for_line(char *line, FirstStageData *first_stage_data);
+void do_first_stage_for_line(char *line, ProgramInformation *program_information);
 
 void handle_label(char *label, section_type section_type, int old_command_lines_count, int old_data_lines_count,
-                  FirstStageData *first_stage_data);
+                  ProgramInformation *program_information);
 
-void handle_shared_label(char *line, char *place_to_token, int *index, List *list, FirstStageData *first_stage_data);
+void handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information);
 
-void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data);
+void handle_numbers(char *place_to_token, char *line, int *index, ProgramInformation *program_information);
 
-void handle_string(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data);
+void handle_string(char *place_to_token, char *line, int *index, ProgramInformation *program_information);
 
-void handle_operation(char *token, char *line, int *index, FirstStageData *first_stage_data);
+void handle_operation(char *token, char *line, int *index, ProgramInformation *program_information);
 
 int get_arguments_number(operation op);
 
-void handle_operation_with_2_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data);
+void handle_operation_with_2_arguments(operation op, char *line, int *index, ProgramInformation *program_information);
 
 
-void handle_operation_with_1_argument(operation op, char *line, int *index, FirstStageData *first_stage_data);
+void handle_operation_with_1_argument(operation op, char *line, int *index, ProgramInformation *program_information);
 
 
-void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data);
+void handle_operation_without_arguments(operation op, char *line, int *index, ProgramInformation *program_information);
 
 CommandLine *get_command_line(int bits, int source_line_number, char *label);
 

@@ -12,32 +12,32 @@
 FirstStageOutput *do_first_stage_for_file(FILE *file) {
     char line[MAX_LINE_LENGTH];
 
-    FirstStageData first_stage_data;
-    first_stage_data.command_lines = init_list();
-    first_stage_data.data_lines = init_list();
-    first_stage_data.label_datas = init_list();
-    first_stage_data.entries = init_list();
-    first_stage_data.external = init_list();
-    first_stage_data.source_line_number = 0;
-    first_stage_data.is_in_error = 0;
+    ProgramInformation program_information;
+    program_information.command_lines = init_list();
+    program_information.data_lines = init_list();
+    program_information.label_datas = init_list();
+    program_information.entries = init_list();
+    program_information.external = init_list();
+    program_information.source_line_number = 0;
+    program_information.is_in_error = 0;
 
     while (fgets(line, sizeof line, file)) {
-        first_stage_data.source_line_number++;
-        do_first_stage_for_line(line, &first_stage_data);
+        program_information.source_line_number++;
+        do_first_stage_for_line(line, &program_information);
     }
 
-    print_first_stage_data(&first_stage_data);
+    print_program_information(&program_information);
 
-    free_list(first_stage_data.command_lines, (void (*)(void *))
+    free_list(program_information.command_lines, (void (*)(void *))
             free_command_line_indirect);
-    free_list(first_stage_data.label_datas, (void (*)(void *))
+    free_list(program_information.label_datas, (void (*)(void *))
             free_label_data_indirect);
-    free_list(first_stage_data.data_lines, (void (*)(void *))
+    free_list(program_information.data_lines, (void (*)(void *))
             NULL);
 
-    free_list(first_stage_data.entries, (void (*)(void *))
+    free_list(program_information.entries, (void (*)(void *))
             NULL);
-    free_list(first_stage_data.external, (void (*)(void *))
+    free_list(program_information.external, (void (*)(void *))
             NULL);
 
     return NULL;
@@ -48,10 +48,10 @@ int line_is_comment(char *line, int *index) {
     return expect_next_char(line, index, ';');
 }
 
-void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
+void do_first_stage_for_line(char *line, ProgramInformation *program_information) {
     char token[MAX_LINE_LENGTH];
-    int old_command_lines_count = first_stage_data->command_lines->count;
-    int old_data_lines_count = first_stage_data->data_lines->count;
+    int old_command_lines_count = program_information->command_lines->count;
+    int old_data_lines_count = program_information->data_lines->count;
     char *label = NULL;
     section_type section_type;
     int index = 0;
@@ -67,51 +67,51 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
         if (!get_next_token(line, &index, token))/*blank line*/
         {
             printf("empty label is illegal");
-            first_stage_data->is_in_error = 1;
+            program_information->is_in_error = 1;
             return;
         }
     }
 
     if (strcmp(token, NUMBERS_PREFIX) == 0) {
-        handle_numbers(token, line, &index, first_stage_data);
+        handle_numbers(token, line, &index, program_information);
         section_type = Data;
     } else if (strcmp(token, STRING_PREFIX) == 0) {
-        handle_string(token, line, &index, first_stage_data);
+        handle_string(token, line, &index, program_information);
         section_type = Data;
     } else if (strcmp(token, ENTRY_PREFIX) == 0) {
-        handle_shared_label(line, token, &index, first_stage_data->entries, first_stage_data);
+        handle_shared_label(line, token, &index, program_information->entries, program_information);
         section_type = None;
     } else if (strcmp(token, EXTERNAL_PREFIX) == 0) {
-        handle_shared_label(line, token, &index, first_stage_data->external, first_stage_data);
+        handle_shared_label(line, token, &index, program_information->external, program_information);
         section_type = None;
     } else {
-        handle_operation(token, line, &index, first_stage_data);
+        handle_operation(token, line, &index, program_information);
         section_type = Command;
     }
-    handle_label(label, section_type, old_command_lines_count, old_data_lines_count, first_stage_data);
+    handle_label(label, section_type, old_command_lines_count, old_data_lines_count, program_information);
 }
 
-void handle_shared_label(char *line, char *place_to_token, int *index, List *list, FirstStageData *first_stage_data) {
+void handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information) {
     if (!get_next_token(line, index, place_to_token)) {
         printf("expected label name, found end of string");
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (!is_legal_label(place_to_token)) {
         printf("'%s' is not a legal label", place_to_token);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
-    add(list, get_shared_label(get_string_copy(place_to_token), first_stage_data->source_line_number));
+    add(list, get_shared_label(get_string_copy(place_to_token), program_information->source_line_number));
     if (get_next_token(line, index, place_to_token)) {
         printf("expected end of string but found '%s'", place_to_token);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
 }
 
 void handle_label(char *label, section_type section_type, int old_command_lines_count, int old_data_lines_count,
-                  FirstStageData *first_stage_data) {
+                  ProgramInformation *program_information) {
     LabelData *label_data;
     int count_to_insert;
     if (label == NULL) {
@@ -121,7 +121,7 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
     if (!is_legal_label(label)) {
         printf("'%s' is not a legal label", label);
         free(label);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (section_type == None) {
@@ -130,30 +130,30 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
         free(label);
         return;
     }
-    if (search(first_stage_data->label_datas, label, (int (*)(void *, void *)) compare_label_data_to_string) != NULL) {
+    if (search(program_information->label_datas, label, (int (*)(void *, void *)) compare_label_data_to_string) != NULL) {
         printf("'%s' already exists", label);
         free(label);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     count_to_insert = (section_type == Command ? old_command_lines_count : old_data_lines_count);
     label_data = get_label_data(label, count_to_insert, section_type);
-    add(first_stage_data->label_datas, label_data);
+    add(program_information->label_datas, label_data);
 }
 
-void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data) {
+void handle_numbers(char *place_to_token, char *line, int *index, ProgramInformation *program_information) {
     int num;
     if (!get_next_token(line, index, place_to_token)) {
         printf("expected number, but found end of string");
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (!parse_number(place_to_token, &num)) {
         printf("'%s' is not a number", place_to_token);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
-    add(first_stage_data->data_lines, get_copy_of_int(num));
+    add(program_information->data_lines, get_copy_of_int(num));
     while (1) {
         if (!get_next_token(line, index, place_to_token)) {
             /*end to string, valid state*/
@@ -161,63 +161,63 @@ void handle_numbers(char *place_to_token, char *line, int *index, FirstStageData
         }
         if (strcmp(place_to_token, ",") != 0) {
             printf("expected comma but '%s' was found", place_to_token);
-            first_stage_data->is_in_error = 1;
+            program_information->is_in_error = 1;
             return;
         }
 
         if (!get_next_token(line, index, place_to_token)) {
             printf("expected number, but found end of string");
-            first_stage_data->is_in_error = 1;
+            program_information->is_in_error = 1;
             return;
         }
         if (!parse_number(place_to_token, &num)) {
             printf("'%s' is not a number", place_to_token);
-            first_stage_data->is_in_error = 1;
+            program_information->is_in_error = 1;
             return;
         }
-        add(first_stage_data->data_lines, get_copy_of_int(num));
+        add(program_information->data_lines, get_copy_of_int(num));
     }
 }
 
-void handle_string(char *place_to_token, char *line, int *index, FirstStageData *first_stage_data) {
+void handle_string(char *place_to_token, char *line, int *index, ProgramInformation *program_information) {
     char *c;
     if (!get_string(line, index, place_to_token)) {
         printf("error while reading string");
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (get_next_token(line, index, place_to_token)) {
         printf("expected end of line after string, but found '%s'", place_to_token);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     c = place_to_token;
     printf("\n token-[%s]\n", place_to_token);
     while (*c) {
-        add(first_stage_data->data_lines, get_copy_of_int((int) *c));
+        add(program_information->data_lines, get_copy_of_int((int) *c));
         c++;
     }
 }
 
-void handle_operation(char *token, char *line, int *index, FirstStageData *first_stage_data) {
+void handle_operation(char *token, char *line, int *index, ProgramInformation *program_information) {
     operation op;
     int arguments_num;
     op = get_operation(token);
     if (op == Unknown) {
         printf("command not found :%s\n", token);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     arguments_num = get_arguments_number(op);
     switch (arguments_num) {
         case 2:
-            handle_operation_with_2_arguments(op, line, index, first_stage_data);
+            handle_operation_with_2_arguments(op, line, index, program_information);
             break;
         case 1:
-            handle_operation_with_1_argument(op, line, index, first_stage_data);
+            handle_operation_with_1_argument(op, line, index, program_information);
             break;
         default:
-            handle_operation_without_arguments(op, line, index, first_stage_data);
+            handle_operation_without_arguments(op, line, index, program_information);
     }
 }
 
@@ -244,91 +244,91 @@ int get_arguments_number(operation op) {
     }
 }
 
-void handle_operation_with_2_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data) {
+void handle_operation_with_2_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
     char source_argument[MAX_LINE_LENGTH];
     char target_argument[MAX_LINE_LENGTH];
     int command_bits;
     ArgumentDetails source_argument_details, target_argument_details;
     if (!read_two_arguments(line, index, source_argument, target_argument)) {
         printf("except to 2 arguments but there aren't");
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (!fill_argument_details(source_argument, &source_argument_details)) {
         printf(" '%s' is not register, number, or valid label name\n", source_argument);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (!fill_argument_details(target_argument, &target_argument_details)) {
         printf(" '%s' is not register, number, or valid label name\n", target_argument);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
 
     if (get_next_token(line, index, source_argument)) {/*todo:another var?*/
         printf(" excepted end of line but found %s\n", source_argument);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details, 0);/*todo: are*/
-    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->source_line_number, NULL));
+    add(program_information->command_lines, get_command_line(command_bits, program_information->source_line_number, NULL));
     if (source_argument_details.ad_method == RegisterAddressing &&
         target_argument_details.ad_method == RegisterAddressing) {
         int registers_bits = get_two_registers_bits(&source_argument_details,
                                                     &target_argument_details);
-        add(first_stage_data->command_lines,
-            get_command_line(registers_bits, first_stage_data->source_line_number, NULL));
+        add(program_information->command_lines,
+            get_command_line(registers_bits, program_information->source_line_number, NULL));
     } else {
         int source_bits, target_bits;
         source_bits = get_argument_bits(&source_argument_details, 1);
-        add(first_stage_data->command_lines,
-            get_command_line(source_bits, first_stage_data->source_line_number,
+        add(program_information->command_lines,
+            get_command_line(source_bits, program_information->source_line_number,
                              source_argument_details.label));
         target_bits = get_argument_bits(&target_argument_details, 0);
-        add(first_stage_data->command_lines,
-            get_command_line(target_bits, first_stage_data->source_line_number,
+        add(program_information->command_lines,
+            get_command_line(target_bits, program_information->source_line_number,
                              target_argument_details.label));
     }
 }
 
-void handle_operation_with_1_argument(operation op, char *line, int *index, FirstStageData *first_stage_data) {
+void handle_operation_with_1_argument(operation op, char *line, int *index, ProgramInformation *program_information) {
     char argument[MAX_LINE_LENGTH];
     int command_bits, argument_bits;
     ArgumentDetails argument_details;
     if (!get_next_token(line, index, argument)) {
         printf("except to argument but there isn't");
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (!fill_argument_details(argument, &argument_details)) {
         printf(" '%s' is not register, number, or valid label name\n", argument);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     if (get_next_token(line, index, argument)) {/*todo:another var?*/
         printf(" excepted end of line but found %s\n", argument);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     command_bits = get_command_bits(op, NULL, &argument_details, 0);/*todo: are*/
-    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->source_line_number, NULL));
+    add(program_information->command_lines, get_command_line(command_bits, program_information->source_line_number, NULL));
     argument_bits = get_argument_bits(&argument_details, 0);
-    add(first_stage_data->command_lines,
-        get_command_line(argument_bits, first_stage_data->source_line_number,
+    add(program_information->command_lines,
+        get_command_line(argument_bits, program_information->source_line_number,
                          argument_details.label));
 }
 
-void handle_operation_without_arguments(operation op, char *line, int *index, FirstStageData *first_stage_data) {
+void handle_operation_without_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
     char text_in_end_of_line[MAX_LINE_LENGTH];
     int command_bits;
 
     if (get_next_token(line, index, text_in_end_of_line)) {
         printf(" excepted end of line but found %s\n", text_in_end_of_line);
-        first_stage_data->is_in_error = 1;
+        program_information->is_in_error = 1;
         return;
     }
     command_bits = get_command_bits(op, NULL, NULL, 0);/*todo: are*/
-    add(first_stage_data->command_lines, get_command_line(command_bits, first_stage_data->source_line_number, NULL));
+    add(program_information->command_lines, get_command_line(command_bits, program_information->source_line_number, NULL));
 }
 
 CommandLine *get_command_line(int bits, int source_line_number, char *label) {

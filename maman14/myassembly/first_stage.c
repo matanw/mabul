@@ -9,38 +9,26 @@
 #include <stddef.h>
 #include <string.h>
 
-FirstStageOutput *do_first_stage_for_file(FILE *file) {
+ProgramInformation *do_first_stage_for_file(FILE *file) {
     char line[MAX_LINE_LENGTH];
 
-    ProgramInformation program_information;
-    program_information.command_lines = init_list();
-    program_information.data_lines = init_list();
-    program_information.label_datas = init_list();
-    program_information.entries = init_list();
-    program_information.external = init_list();
-    program_information.source_line_number = 0;
-    program_information.is_in_error = 0;
+    ProgramInformation *program_information = malloc(sizeof(ProgramInformation));
+    program_information->command_lines = init_list();
+    program_information->data_lines = init_list();
+    program_information->label_datas = init_list();
+    program_information->entries = init_list();
+    program_information->external = init_list();
+    program_information->source_line_number = 0;
+    program_information->is_in_error = 0;
 
     while (fgets(line, sizeof line, file)) {
-        program_information.source_line_number++;
-        do_first_stage_for_line(line, &program_information);
+        program_information->source_line_number++;
+        do_first_stage_for_line(line, program_information);
     }
 
-    print_program_information(&program_information);
+    print_program_information(program_information);
 
-    free_list(program_information.command_lines, (void (*)(void *))
-            free_command_line_indirect);
-    free_list(program_information.label_datas, (void (*)(void *))
-            free_label_data_indirect);
-    free_list(program_information.data_lines, (void (*)(void *))
-            NULL);
-
-    free_list(program_information.entries, (void (*)(void *))
-            NULL);
-    free_list(program_information.external, (void (*)(void *))
-            NULL);
-
-    return NULL;
+    return program_information;
 }
 
 
@@ -91,7 +79,8 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
     handle_label(label, section_type, old_command_lines_count, old_data_lines_count, program_information);
 }
 
-void handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information) {
+void
+handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information) {
     if (!get_next_token(line, index, place_to_token)) {
         printf("expected label name, found end of string");
         program_information->is_in_error = 1;
@@ -130,7 +119,8 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
         free(label);
         return;
     }
-    if (search(program_information->label_datas, label, (int (*)(void *, void *)) compare_label_data_to_string) != NULL) {
+    if (search(program_information->label_datas, label, (int (*)(void *, void *)) compare_label_data_to_string) !=
+        NULL) {
         printf("'%s' already exists", label);
         free(label);
         program_information->is_in_error = 1;
@@ -271,7 +261,8 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
         return;
     }
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details, 0);/*todo: are*/
-    add(program_information->command_lines, get_command_line(command_bits, program_information->source_line_number, NULL));
+    add(program_information->command_lines,
+        get_command_line(command_bits, program_information->source_line_number, NULL));
     if (source_argument_details.ad_method == RegisterAddressing &&
         target_argument_details.ad_method == RegisterAddressing) {
         int registers_bits = get_two_registers_bits(&source_argument_details,
@@ -311,7 +302,8 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Prog
         return;
     }
     command_bits = get_command_bits(op, NULL, &argument_details, 0);/*todo: are*/
-    add(program_information->command_lines, get_command_line(command_bits, program_information->source_line_number, NULL));
+    add(program_information->command_lines,
+        get_command_line(command_bits, program_information->source_line_number, NULL));
     argument_bits = get_argument_bits(&argument_details, 0);
     add(program_information->command_lines,
         get_command_line(argument_bits, program_information->source_line_number,
@@ -328,7 +320,8 @@ void handle_operation_without_arguments(operation op, char *line, int *index, Pr
         return;
     }
     command_bits = get_command_bits(op, NULL, NULL, 0);/*todo: are*/
-    add(program_information->command_lines, get_command_line(command_bits, program_information->source_line_number, NULL));
+    add(program_information->command_lines,
+        get_command_line(command_bits, program_information->source_line_number, NULL));
 }
 
 CommandLine *get_command_line(int bits, int source_line_number, char *label) {
@@ -487,14 +480,3 @@ int get_argument_bits(ArgumentDetails *argument_details,
     return bits;
 }
 
-
-/*todo:move*/
-void free_label_data_indirect(LabelData *label_data) {
-    if (label_data->label != NULL)
-        free(label_data->label);
-}
-
-void free_command_line_indirect(CommandLine *command_line) {
-    if (command_line->label != NULL)
-        free(command_line->label);
-}

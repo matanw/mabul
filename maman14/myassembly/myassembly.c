@@ -1,5 +1,6 @@
 
 #include "first_stage.h"
+#include "deallocation.h"
 
 
 int main1123(int argc, char *argv[]) {
@@ -31,7 +32,8 @@ int main(int argc, char *argv[]) {
         printf("file is %s\n", argv[i]);
         file = fopen(argv[i], "r");
         if (file) {
-            do_first_stage_for_file(file);
+            ProgramInformation *program_information = do_first_stage_for_file(file);
+            free_program_information(program_information);
             fclose(file);
         }
     }

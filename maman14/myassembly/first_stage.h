@@ -48,20 +48,15 @@ typedef struct program_information {
     int is_in_error;
 } ProgramInformation;
 
-typedef struct first_stage_output {
-    List *command_lines;
-    List *label_datas;
-} FirstStageOutput;
-
-
-FirstStageOutput *do_first_stage_for_file(FILE *file);
+ProgramInformation *do_first_stage_for_file(FILE *file);
 
 void do_first_stage_for_line(char *line, ProgramInformation *program_information);
 
 void handle_label(char *label, section_type section_type, int old_command_lines_count, int old_data_lines_count,
                   ProgramInformation *program_information);
 
-void handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information);
+void
+handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information);
 
 void handle_numbers(char *place_to_token, char *line, int *index, ProgramInformation *program_information);
 
@@ -106,10 +101,5 @@ int get_argument_bits(ArgumentDetails *argument_details,
 
 int line_is_comment(char *line, int *index);
 
-
-/*todo:move*/
-void free_label_data_indirect(LabelData *label_data);
-
-void free_command_line_indirect(CommandLine *command_line);
 
 #endif

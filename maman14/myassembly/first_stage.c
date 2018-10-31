@@ -49,9 +49,12 @@ int line_is_comment(char *line, int *index) {
 }
 
 void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
-    int index;
     char token[MAX_LINE_LENGTH];
-    index = 0;
+    int old_command_lines_count = first_stage_data->command_lines->count;
+    int old_data_lines_count = first_stage_data->data_lines->count;
+    char *label = NULL;
+    section_type section_type;
+    int index = 0;
     if (line_is_comment(line, &index)) {
         return;
     }
@@ -59,22 +62,33 @@ void do_first_stage_for_line(char *line, FirstStageData *first_stage_data) {
     {
         return;
     }
-    handle_label(token, line, &index, first_stage_data);
-    if (!get_next_token(line, &index, token))/*blank line*/
-    {
-        return;
+    if (get_last_char(token) == ':') {
+        label = get_string_copy(token);
+        if (!get_next_token(line, &index, token))/*blank line*/
+        {
+            printf("empty label is illegal");
+            first_stage_data->is_in_error = 1;
+            return;
+        }
     }
+
     if (strcmp(token, NUMBERS_PREFIX) == 0) {
         handle_numbers(token, line, &index, first_stage_data);
+        section_type = Data;
     } else if (strcmp(token, STRING_PREFIX) == 0) {
         handle_string(token, line, &index, first_stage_data);
+        section_type = Data;
     } else if (strcmp(token, ENTRY_PREFIX) == 0) {
         handle_shared_label(line, token, &index, first_stage_data->entries, first_stage_data);
+        section_type = None;
     } else if (strcmp(token, EXTERNAL_PREFIX) == 0) {
         handle_shared_label(line, token, &index, first_stage_data->external, first_stage_data);
+        section_type = None;
     } else {
         handle_operation(token, line, &index, first_stage_data);
+        section_type = Command;
     }
+    handle_label(label, section_type, old_command_lines_count, old_data_lines_count, first_stage_data);
 }
 
 void handle_shared_label(char *line, char *place_to_token, int *index, List *list, FirstStageData *first_stage_data) {
@@ -96,24 +110,34 @@ void handle_shared_label(char *line, char *place_to_token, int *index, List *lis
     }
 }
 
-void handle_label(char *token, char *line, int *index, FirstStageData *first_stage_data) {
+void handle_label(char *label, section_type section_type, int old_command_lines_count, int old_data_lines_count,
+                  FirstStageData *first_stage_data) {
     LabelData *label_data;
-    if (!expect_next_char(line, index, ':')) {
-        *index = 0;/*return index to start of string*/
+    int count_to_insert;
+    if (label == NULL) {
         return;
     }
-    printf("label:[%s]", token);
-    if (!is_legal_label(token)) {
-        printf("'%s' is not a legal label", token);
+    delete_last_char(label);
+    if (!is_legal_label(label)) {
+        printf("'%s' is not a legal label", label);
+        free(label);
         first_stage_data->is_in_error = 1;
         return;
     }
-    if (search(first_stage_data->label_datas, token, (int (*)(void *, void *)) compare_label_data_to_string) != NULL) {
-        printf("'%s' already exists", token);
+    if (section_type == None) {
+        printf("warn: label with .extern or .entity has no meaning");
+        /*no mark error*/
+        free(label);
+        return;
+    }
+    if (search(first_stage_data->label_datas, label, (int (*)(void *, void *)) compare_label_data_to_string) != NULL) {
+        printf("'%s' already exists", label);
+        free(label);
         first_stage_data->is_in_error = 1;
         return;
     }
-    label_data = get_label_data(get_string_copy(token), first_stage_data->command_lines->count);
+    count_to_insert = (section_type == Command ? old_command_lines_count : old_data_lines_count);
+    label_data = get_label_data(label, count_to_insert, section_type);
     add(first_stage_data->label_datas, label_data);
 }
 
@@ -398,11 +422,12 @@ char *get_string_copy(char *str) {/*todo:move*/
     return res;
 }
 
-LabelData *get_label_data(char *label, int code_address) {
+LabelData *get_label_data(char *label, int code_address, section_type section_type) {
     LabelData *label_data;
     label_data = malloc(sizeof(LabelData));
     label_data->label = label;
     label_data->code_address = code_address;
+    label_data->section_type = section_type;
     return label_data;
 }
 

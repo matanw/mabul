@@ -17,8 +17,8 @@ int is_comma(char ch) {
     return (ch == ',');
 }
 
-int is_special_char(char ch) {
-    return (ch == ':' || ch == ',');
+int is_colon(char ch) {
+    return (ch == ':');
 }
 
 int get_next_token(char *input, int *index, char *output) {
@@ -33,10 +33,13 @@ int get_next_token(char *input, int *index, char *output) {
         (*index)++;
         return 1;
     }
-    while (!(is_special_char(input[*index]) || is_end_char(input[*index]) || is_whitespace(input[*index]))) {
+    while (!(is_comma(input[*index]) || is_end_char(input[*index]) || is_whitespace(input[*index]))) {
         *output = input[*index];
         (*index)++;
         output++;
+        if (is_colon(*(output - 1))) {
+            break;
+        }
     }
     *output = '\0';
     return 1;
@@ -133,4 +136,12 @@ int get_string(char *input, int *index, char *token) {
         *token = input[*index];
         token++;
     }
+}
+
+char get_last_char(char *string) {/*todo : is need to move?*/
+    return string[strlen(string) - 1];
+}
+
+void delete_last_char(char *string) {/*todo : is need to move?*/
+    string[strlen(string) - 1] = '\0';
 }

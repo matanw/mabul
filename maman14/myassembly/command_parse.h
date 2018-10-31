@@ -26,4 +26,8 @@ int read_two_arguments(char *input, int *index, char *output1, char *output2);
 
 int get_string(char *input, int *index, char *token);
 
+char get_last_char(char *string);
+
+void delete_last_char(char *string);
+
 #endif

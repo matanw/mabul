@@ -9,7 +9,7 @@ typedef enum OPERATION {
     Jmp = 9, Bne = 10, Red = 11, Prn = 12, Jsr = 13, Rst = 14, Stop = 15, Unknown = 16
 } operation;
 typedef enum SECTION_TYPE {
-    Command = 1, Data = 2
+    Command = 1, Data = 2, None = 0
 } section_type;
 
 typedef enum ADDRESSING_METHOD {
@@ -58,7 +58,8 @@ FirstStageOutput *do_first_stage_for_file(FILE *file);
 
 void do_first_stage_for_line(char *line, FirstStageData *first_stage_data);
 
-void handle_label(char *token, char *line, int *index, FirstStageData *first_stage_data);
+void handle_label(char *label, section_type section_type, int old_command_lines_count, int old_data_lines_count,
+                  FirstStageData *first_stage_data);
 
 void handle_shared_label(char *line, char *place_to_token, int *index, List *list, FirstStageData *first_stage_data);
 
@@ -92,7 +93,7 @@ int fill_argument_details(char *token, ArgumentDetails *argument_details);
 
 char *get_string_copy(char *str);
 
-LabelData *get_label_data(char *label, int code_address);
+LabelData *get_label_data(char *label, int code_address, section_type section_type);
 
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,
                      ArgumentDetails *target_argument_details, int are);

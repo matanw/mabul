@@ -1,7 +1,7 @@
 #ifndef INCLUDE_DEBUG_UTILS_H
 #define INCLUDE_DEBUG_UTILS_H
 
-#include "first_stage.h"
+#include "data_structures.h"
 #include "list.h"
 
 void print_command_line(CommandLine *commandLine);

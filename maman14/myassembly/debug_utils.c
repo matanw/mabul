@@ -1,7 +1,7 @@
 #include "constants.h"
 #include "debug_utils.h"
 #include "bits_operations.h"
-
+#include <stdio.h>
 
 void print_command_line(CommandLine *commandLine) {
     printf("%d:", commandLine->source_line_number);

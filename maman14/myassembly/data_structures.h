@@ -1,5 +1,8 @@
 #ifndef DATA_STRUCTURES_H
 #define DATA_STRUCTURES_H
+
+#include "list.h"
+
 typedef struct command_line {
     int bits;
     int source_line_number;

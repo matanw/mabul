@@ -2,51 +2,22 @@
 #define INCLUDE_FIRST_STAGE_H
 
 #include "list.h"
+#include "data_structures.h"
 #include <stdio.h>
 
 typedef enum OPERATION {
     Mov = 0, Cmp = 1, Add = 2, Sub = 3, Not = 4, Clr = 5, Lea = 6, Inc = 7, Dec = 8,
     Jmp = 9, Bne = 10, Red = 11, Prn = 12, Jsr = 13, Rst = 14, Stop = 15, Unknown = 16
 } operation;
-typedef enum SECTION_TYPE {
-    Command = 1, Data = 2, None = 0
-} section_type;
-
 typedef enum ADDRESSING_METHOD {
     ImmediateAddressing = 1, DirectAddressing = 3, RegisterAddressing = 5
 } addressing_method;
-
-typedef struct command_line {
-    int bits;
-    int source_line_number;
-    char *label;
-} CommandLine;
 
 typedef struct argument_details {
     addressing_method ad_method;
     int num;
     char *label;
 } ArgumentDetails;
-
-typedef struct label_data {
-    char *label;
-    int code_address;
-    section_type section_type;
-} LabelData;
-
-typedef struct shared_label {
-    char *label;
-    int source_line_number;
-} SharedLabel;
-typedef struct program_information {
-    List *command_lines;
-    List *data_lines;
-    List *label_datas;
-    List *entries;
-    List *external;
-    int source_line_number;
-    int is_in_error;
-} ProgramInformation;
 
 ProgramInformation *do_first_stage_for_file(FILE *file);
 

@@ -1,7 +1,7 @@
 COMPILE_COMMAND=gcc -c -ansi -Wall -pedantic
 
 #TODO: make it hierercy
-build:  myassembly.c bits_operations.c bits_operations.h command_parse.c command_parse.h constants.h list.c list.h first_stage.h first_stage.c debug_utils.c debug_utils.h deallocation.c deallocation.h
+build:  myassembly.c bits_operations.c bits_operations.h command_parse.c command_parse.h constants.h list.c list.h first_stage.h first_stage.c debug_utils.c debug_utils.h deallocation.c deallocation.h data_structures.h
 	$(COMPILE_COMMAND) myassembly.c
 	$(COMPILE_COMMAND) bits_operations.c
 	$(COMPILE_COMMAND) command_parse.c

@@ -33,7 +33,7 @@ files_writer.o: files_writer.c files_writer.h data_structures.h
 list.o:list.c list.h
 	$(COMPILE_COMMAND) list.c
 
-second_stage.o: second_stage.c second_stage.h data_structures.h
+second_stage.o: second_stage.c second_stage.h data_structures.h debug_utils.h bits_operations.h list.h constants.h
 	$(COMPILE_COMMAND) second_stage.c
 
 myassembly.o:myassembly.c first_stage.h deallocation.h
@@ -42,5 +42,5 @@ myassembly.o:myassembly.c first_stage.h deallocation.h
 myassembly: myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o
 	gcc -o myassembly myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o
 
-clean: 
+clean:
 	rm -f myassembly *.o

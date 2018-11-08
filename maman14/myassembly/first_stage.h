@@ -62,7 +62,7 @@ char *get_string_copy(char *str);
 LabelData *get_label_data(char *label, int code_address, section_type section_type);
 
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,
-                     ArgumentDetails *target_argument_details, int are);
+                     ArgumentDetails *target_argument_details);
 
 int get_two_registers_bits(ArgumentDetails *source_argument_details,
                            ArgumentDetails *target_argument_details);

@@ -260,7 +260,7 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
         program_information->is_in_error = 1;
         return;
     }
-    command_bits = get_command_bits(op, &source_argument_details, &target_argument_details, 0);/*todo: are*/
+    command_bits = get_command_bits(op, &source_argument_details, &target_argument_details);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));
     if (source_argument_details.ad_method == RegisterAddressing &&
@@ -301,7 +301,7 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Prog
         program_information->is_in_error = 1;
         return;
     }
-    command_bits = get_command_bits(op, NULL, &argument_details, 0);/*todo: are*/
+    command_bits = get_command_bits(op, NULL, &argument_details);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));
     argument_bits = get_argument_bits(&argument_details, 0);
@@ -319,7 +319,7 @@ void handle_operation_without_arguments(operation op, char *line, int *index, Pr
         program_information->is_in_error = 1;
         return;
     }
-    command_bits = get_command_bits(op, NULL, NULL, 0);/*todo: are*/
+    command_bits = get_command_bits(op, NULL, NULL);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));
 }
@@ -439,7 +439,7 @@ int *get_copy_of_int(int num) {
 }
 
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,
-                     ArgumentDetails *target_argument_details, int are) {
+                     ArgumentDetails *target_argument_details) {
     int bits = 0;
     put_bits_int(&bits, op, OP_CODE_POSITION);
     if (source_argument_details != NULL) {
@@ -450,7 +450,6 @@ int get_command_bits(operation op, ArgumentDetails *source_argument_details,
     if (target_argument_details != NULL) {
         put_bits_int(&bits, target_argument_details
                 ->ad_method, TARGET_ADDRESSING_POSITION);
-        put_bits_int(&bits, are, ARE_POSITION);
     }
     return bits;
 }
@@ -462,7 +461,6 @@ int get_two_registers_bits(ArgumentDetails *source_argument_details,
             ->num, SOURCE_REGISTER_POSITION);
     put_bits_int(&bits, target_argument_details
             ->num, TARGET_REGISTER_POSITION);
-    put_bits_int(&bits, 0, ARE_POSITION);/*todo:*/
     return bits;
 }
 

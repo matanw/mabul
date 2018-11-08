@@ -33,6 +33,14 @@ void for_each(List *list, void (*action)(void *)) {
     }
 }
 
+void for_each_with_aside_var(List *list, void (*action)(void *, void *), void *aside_var) {
+    Node *pos = list->first;
+    while (pos != NULL) {
+        action(pos->val, aside_var);
+        pos = pos->next;
+    }
+}
+
 void *search(List *list, void *val, int (*cmp)(void *, void *)) {
     Node *pos = list->first;
     while (pos != NULL) {

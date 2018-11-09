@@ -27,7 +27,7 @@ debug_utils.o: debug_utils.c debug_utils.h constants.h bits_operations.h data_st
 first_stage.o: first_stage.c first_stage.h list.h data_structures.h  command_parse.h debug_utils.h bits_operations.h io_utils.h
 	$(COMPILE_COMMAND) first_stage.c
 
-files_writer.o: files_writer.c files_writer.h data_structures.h io_utils.h
+files_writer.o: files_writer.c files_writer.h data_structures.h io_utils.h constants.h
 	$(COMPILE_COMMAND) files_writer.c
 
 list.o:list.c list.h

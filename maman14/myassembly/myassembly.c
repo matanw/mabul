@@ -1,6 +1,7 @@
 
 #include "first_stage.h"
 #include "second_stage.h"
+#include "files_writer.h"
 #include "deallocation.h"
 
 
@@ -35,6 +36,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
         do_second_stage_for_file(program_information);
+        write_files(program_information, argv[i]);
         free_program_information(program_information);
     }
 }

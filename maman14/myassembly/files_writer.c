@@ -4,12 +4,15 @@
 
 
 char get_base_64_char_by_code(int code) {
-    return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+"[code];
+    return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[code];
 }
 
 void write_bits_in_base64(int *bits, FILE *object_file) {
-    int higher_value = *bits >> 6;
+    int higher_value = (*bits >> 6) & 63;
     int lower_value = *bits & 63;/* 63=2^6-1=111111 in binary*/
+
+    printf("write:%d high:%d low:%d [%c][%c]\n", *bits, higher_value, lower_value,
+           get_base_64_char_by_code(higher_value), get_base_64_char_by_code(lower_value));/*todo:delete*/
     fprintf(object_file, "%c%c\n", get_base_64_char_by_code(higher_value), get_base_64_char_by_code(lower_value));
 }
 

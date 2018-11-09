@@ -198,6 +198,7 @@ void handle_string(char *place_to_token, char *line, int *index, ProgramInformat
         add(program_information->data_lines, get_copy_of_int((int) *c));
         c++;
     }
+    add(program_information->data_lines, get_copy_of_int(0));
 }
 
 void handle_operation(char *token, char *line, int *index, ProgramInformation *program_information) {

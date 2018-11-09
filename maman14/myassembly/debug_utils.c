@@ -17,7 +17,9 @@ void print_label_data(LabelData *label_data) {
 }
 
 void print_num(int *num) {
-    printf("%d\n", *num);
+    printf("%d  - ", *num);
+    print_bits_int(*num);
+    printf("\n");
 }
 
 void print_shared_label(SharedLabel *shared_label) {

@@ -19,7 +19,9 @@ typedef struct argument_details {
     char *label;
 } ArgumentDetails;
 
-ProgramInformation *do_first_stage_for_file(FILE *file);
+ProgramInformation *do_first_stage_for_file(char *file_name);
+
+ProgramInformation *init_program_information();
 
 void do_first_stage_for_line(char *line, ProgramInformation *program_information);
 

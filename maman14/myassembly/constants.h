@@ -1,6 +1,6 @@
-/*TODO:splint this file*/
-#define MAX_LINE_LENGTH 80
 
+#define MAX_LINE_LENGTH 80
+#define  MAX_FILE_NAME_LENGTH 100 /*todo:ask*/
 
 #define SOURCE_ADDRESSING_POSITION 9
 #define OP_CODE_POSITION 5
@@ -19,5 +19,7 @@
 #define ENTRY_PREFIX ".entry"
 #define EXTERNAL_PREFIX ".extern"
 
-
-/*todo: a r e*/
+#define SOURCE_FILE_EXTENSION ".as"
+#define OBJECT_FILE_EXTENSION ".ob"
+#define ENTRIES_FILE_EXTENSION ".ent"
+#define EXTERNAL_FILE_EXTENSION ".ext"

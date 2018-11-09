@@ -29,14 +29,12 @@ int main(int argc, char *argv[]) {
     }
 
     for (i = 1; i < argc; i++) {
-        FILE *file;
-        printf("file is %s\n", argv[i]);
-        file = fopen(argv[i], "r");
-        if (file) {
-            ProgramInformation *program_information = do_first_stage_for_file(file);
-            do_second_stage_for_file(program_information);
-            free_program_information(program_information);
-            fclose(file);
+        ProgramInformation *program_information = do_first_stage_for_file(argv[i]);
+        if (program_information == NULL) {
+            printf("cannot read file");
+            continue;
         }
+        do_second_stage_for_file(program_information);
+        free_program_information(program_information);
     }
 }

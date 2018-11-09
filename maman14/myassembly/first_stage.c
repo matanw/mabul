@@ -5,13 +5,32 @@
 #include "command_parse.h"
 #include "debug_utils.h"
 #include "bits_operations.h"
+#include "io_utils.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 
-ProgramInformation *do_first_stage_for_file(FILE *file) {
+ProgramInformation *do_first_stage_for_file(char *file_name) {
     char line[MAX_LINE_LENGTH];
+    ProgramInformation *program_information;
+    FILE *file = fopen_with_extension(file_name, SOURCE_FILE_EXTENSION, "r");
+    if (file == NULL) {
+        return NULL;
+    }
+    program_information = init_program_information();
 
+    while (fgets(line, sizeof line, file)) {
+        program_information->source_line_number++;
+        do_first_stage_for_line(line, program_information);
+    }
+    fclose(file);
+
+    print_program_information(program_information);
+
+    return program_information;
+}
+
+ProgramInformation *init_program_information() {
     ProgramInformation *program_information = malloc(sizeof(ProgramInformation));
     program_information->command_lines = init_list();
     program_information->data_lines = init_list();
@@ -20,17 +39,9 @@ ProgramInformation *do_first_stage_for_file(FILE *file) {
     program_information->external = init_list();
     program_information->source_line_number = 0;
     program_information->is_in_error = 0;
-
-    while (fgets(line, sizeof line, file)) {
-        program_information->source_line_number++;
-        do_first_stage_for_line(line, program_information);
-    }
-
-    print_program_information(program_information);
-
     return program_information;
-}
 
+}
 
 int line_is_comment(char *line, int *index) {
     return expect_next_char(line, index, ';');

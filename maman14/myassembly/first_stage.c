@@ -483,9 +483,8 @@ int get_argument_bits(ArgumentDetails *argument_details,
                 ->num, NUMBER_POSITION);
     } else if (argument_details->ad_method == RegisterAddressing) {
         put_bits_int(&bits, argument_details
-                ->ad_method, (is_source ? SOURCE_REGISTER_POSITION : TARGET_REGISTER_POSITION));
+                ->num, (is_source ? SOURCE_REGISTER_POSITION : TARGET_REGISTER_POSITION));
     }
-    put_bits_int(&bits, 0, ARE_POSITION);/*todo:*/
     return bits;
 }
 

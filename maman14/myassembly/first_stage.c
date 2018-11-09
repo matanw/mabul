@@ -453,14 +453,14 @@ int *get_copy_of_int(int num) {
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,
                      ArgumentDetails *target_argument_details) {
     int bits = 0;
-    put_bits_int(&bits, op, OP_CODE_POSITION);
+    put_bits(&bits, op, OP_CODE_POSITION);
     if (source_argument_details != NULL) {
-        put_bits_int(&bits, source_argument_details
+        put_bits(&bits, source_argument_details
                 ->ad_method, SOURCE_ADDRESSING_POSITION);
-        put_bits_int(&bits, op, OP_CODE_POSITION);
+        put_bits(&bits, op, OP_CODE_POSITION);
     }
     if (target_argument_details != NULL) {
-        put_bits_int(&bits, target_argument_details
+        put_bits(&bits, target_argument_details
                 ->ad_method, TARGET_ADDRESSING_POSITION);
     }
     return bits;
@@ -469,9 +469,9 @@ int get_command_bits(operation op, ArgumentDetails *source_argument_details,
 int get_two_registers_bits(ArgumentDetails *source_argument_details,
                            ArgumentDetails *target_argument_details) {
     int bits = 0;
-    put_bits_int(&bits, source_argument_details
+    put_bits(&bits, source_argument_details
             ->num, SOURCE_REGISTER_POSITION);
-    put_bits_int(&bits, target_argument_details
+    put_bits(&bits, target_argument_details
             ->num, TARGET_REGISTER_POSITION);
     return bits;
 }
@@ -480,10 +480,10 @@ int get_argument_bits(ArgumentDetails *argument_details,
                       int is_source) {
     int bits = 0;
     if (argument_details->ad_method == ImmediateAddressing) {
-        put_bits_int(&bits, argument_details
+        put_bits(&bits, argument_details
                 ->num, NUMBER_POSITION);
     } else if (argument_details->ad_method == RegisterAddressing) {
-        put_bits_int(&bits, argument_details
+        put_bits(&bits, argument_details
                 ->num, (is_source ? SOURCE_REGISTER_POSITION : TARGET_REGISTER_POSITION));
     }
     return bits;

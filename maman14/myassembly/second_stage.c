@@ -14,11 +14,11 @@ void do_second_stage_for_file(ProgramInformation *program_information) {
 }
 
 void fill_are(CommandLine *command_line, are are) {
-    put_bits_int(&command_line->bits, are, ARE_POSITION);
+    put_bits(&command_line->bits, are, ARE_POSITION);
 }
 
 void fill_address(CommandLine *command_line, int address) {
-    put_bits_int(&command_line->bits, address, LABEL_POSITION);
+    put_bits(&command_line->bits, address, LABEL_POSITION);
 }
 
 int compare_label_data_to_string2(LabelData *label_data, char *label) {/*todo: same function exists in first_stage*/

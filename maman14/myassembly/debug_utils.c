@@ -5,7 +5,7 @@
 
 void print_command_line(CommandLine *commandLine) {
     printf("%d:", commandLine->source_line_number);
-    print_bits_int(commandLine->bits);
+    print_bits(commandLine->bits);
     if (commandLine->label != NULL) {
         printf(" , label %s", commandLine->label);
     }
@@ -18,7 +18,7 @@ void print_label_data(LabelData *label_data) {
 
 void print_num(int *num) {
     printf("%d  - ", *num);
-    print_bits_int(*num);
+    print_bits(*num);
     printf("\n");
 }
 

@@ -12,14 +12,14 @@ void set_digit_one(unsigned int *num, int digit_num) {
     *num |= (1 << digit_num);
 }
 
-
+/*print a number as binary value*/
 void print_binary(unsigned int num) {
     int i;
     for (i = BINARY_DIGIT_AMOUNT; i >= 0; i--)
         printf("%d", get_digit(num, i));
 }
 
-
+/*calculate sum of 2 number, by actions on binary represents*/
 unsigned int inner_my_add(unsigned int a, unsigned int b) {
     unsigned int sum = 0;
     int addition_to_next = 0;
@@ -42,6 +42,7 @@ unsigned int inner_my_add(unsigned int a, unsigned int b) {
     return sum;
 }
 
+/*return the sum of a and b, print a, b, and the sum*/
 unsigned int my_add(unsigned int a, unsigned int b) {
     unsigned int sum;
     printf("first number in binary base is ");

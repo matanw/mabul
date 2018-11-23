@@ -2,60 +2,62 @@
 #include <stdlib.h>
 #include "my_set.h"
 
-struct NumbersSet {/*todo: convension*/
-    int array[64];
-    int size;
-};
-
-
-void print_set(struct NumbersSet *set)
-{
-    printf("set is :");
+/*prints a set.
+ * params: set - the set to print
+ */
+void print_set(NumbersSet *set) {
     int i;
-    for(i=0;i<set->size;i++)
-    {
-        printf("%d ",set->array[i]);
+    printf("\nset is :");
+    for (i = 0; i < set->size; i++) {
+        printf("%d ", set->array[i]);
     }
 }
-void push_to_set(struct NumbersSet *set, int num)
-{
-    set->array[set->size]=num;
+
+/* Push number (num) to set*/
+void push_to_set(NumbersSet *set, int num) {
+    set->array[set->size] = num;
     set->size++;
 }
 
-int is_in_set(struct NumbersSet *set, int num){
+
+/* Check if number is in a set, returns 1 if num is in set, otherwise, retruns 0*/
+int is_in_set(NumbersSet *set, int num) {
     int i;
-    for(i=0;i<set->size;i++)
-    {
-        if(set->array[i]==num){
+    for (i = 0; i < set->size; i++) {
+        if (set->array[i] == num) {
             return 1;
         }
     }
     return 0;
 }
-void  push_if_not_exists(struct NumbersSet *set, int num)
-{
-    if(!is_in_set(set,num)){
-        push_to_set(set,num);
+
+/*push num to set, if num does not already exist in set*/
+void push_if_not_exists(NumbersSet *set, int num) {
+    if (!is_in_set(set, num)) {
+        push_to_set(set, num);
     }
 }
-struct NumbersSet * init_set()
-{
-    struct NumbersSet *set = (struct NumbersSet*)malloc(sizeof(struct NumbersSet));
-    set->size=0;
+
+/*initialize a set*/
+NumbersSet *init_set() {
+    NumbersSet *set = (NumbersSet *) malloc(sizeof(NumbersSet));
+    set->size = 0;
     return set;
 }
-struct NumbersSet * get_set(){
-    struct NumbersSet *set=init_set();
+
+/*gets number from standard input, and puts them in set, returns the set*/
+NumbersSet *get_set() {
+    NumbersSet *set = init_set();
     int num;
-    while(scanf("%d",&num)==1)
-    {
-        push_if_not_exists(set,num);
+    while (scanf("%d", &num) == 1) {
+        printf("%d ", num);
+        push_if_not_exists(set, num);
     }
     return set;
 }
-int main(){
-    struct NumbersSet *set=get_set();
+
+int main() {
+    NumbersSet *set = get_set();
     print_set(set);
     free(set);
     return 0;

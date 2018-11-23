@@ -2,8 +2,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_LENGTH 81
+#define MAX_LENGTH 82 /*80 chars of string + 1 for \n +1 for \0 */
 
+/*return 1 if string is palindrome, otherwise 0*/
 int palindrome(char s[]) {
     int len = strlen(s);
     char *first = s;

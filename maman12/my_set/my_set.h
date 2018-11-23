@@ -4,14 +4,34 @@ typedef struct numbers_set {
     int size;
 } NumbersSet;
 
+/* Prints a set.
+ * params: set - the set to print
+ */
 void print_set(NumbersSet *);
 
-void push_to_set(NumbersSet *, int);
 
-int is_in_set(NumbersSet *, int);
+/* Insert number (num) to set
+ * params: set -set to insert to
+ *         num -num to insert*/
+void insert_to_set(NumbersSet *set, int num);
 
-void push_if_not_exists(NumbersSet *, int);
 
+/* Check if number is in a set
+ *
+ *
+ * params: set -set to check number i
+ *         num -num to check*
+ * return value: 1 if num is in set, otherwise, returns 0*/
+int is_in_set(NumbersSet *set, int num);
+
+
+/* Initialize a set*/
 NumbersSet *init_set();
 
-NumbersSet *get_set();
+
+/* Get number from standard input, and puts them in set
+ *
+ * params: set -set to insert the scanned numbers to
+ * */
+void get_set(NumbersSet *set);
+

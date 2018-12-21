@@ -100,14 +100,14 @@ int read_var_name(char *input, int *index, char *place_to_token, char *var) {
  * Function get place to token for internal use
  * Side effect: increment the index to next token index,
  * as I explained in get_next_token documentation*/
-int read_number(char *input, int *index, char *place_to_token, float *var) {
-    float num;
+int read_number(char *input, int *index, char *place_to_token, double *var) {
+    double num;
     char *ptr;
     if (!get_next_token(input, index, place_to_token)) {
         printf("expected number, but found end of string");
         return 0;
     }
-    num = strtof(place_to_token, &ptr);
+    num = strtod(place_to_token, &ptr);
     if (ptr == place_to_token || *ptr != '\0') {
         printf("'%s' is not a valid number", place_to_token);
         return 0;
@@ -118,7 +118,7 @@ int read_number(char *input, int *index, char *place_to_token, float *var) {
 
 
 /*function get pointer to char array (input) and offset (index)
-* and validade string endeds starting from index.
+* and validate string ends starting from index.
 *If it success, it returns 1, otherwise, it returns 0 and print error message to user.
 * Function get place to token for internal use
 * Side effect: increment the index to next token index,
@@ -136,10 +136,10 @@ int read_end_of_string(char *input, int *index, char *place_to_token) {
  * function try to read from input, starting from index, what the format reqired.
  * Format can contain 3 characters:
  * c - represents variable name
- * f - represents float number
+ * f - represents double number
  * , - represent comma
  * For example, read_in_format(input,index,place_to_token,"c,f,f",&c,&f1,&f2)
- * try to read var name to c, and after it float nuber to f1 and float number to f2,
+ * try to read var name to c, and after it double nuber to f1 and double number to f2,
  * separated by commas.
  * If it success, it returns 1, otherwise, it returns 0 and print error message to user.
  * Function get place to token for internal use
@@ -157,7 +157,7 @@ int read_in_format(char *input, int *index, char *place_to_token, char *format, 
                 return 0;
             }
         } else if (*format == 'f') {
-            float *f = va_arg(arguments, float * );
+            double *f = va_arg(arguments, double * );
             if (!read_number(input, index, place_to_token, f)) {
                 va_end(arguments);
                 return 0;

@@ -13,12 +13,12 @@ void print_complex(Complex num) {
 }
 
 /*print a real number to stdout*/
-void print_real(float num) {
+void print_real(double num) {
     printf("%.6g\n", fix_minus_zero(num));
 }
 
 /*resolves the problem of print "-0"*/
-float fix_minus_zero(float num) {
+double fix_minus_zero(double num) {
     return (num == 0 ? 0 : num);
 }
 
@@ -58,12 +58,12 @@ int execute_command(Complex *nums, char *line, char *token) {
     }
     if (strcmp("read_comp", token) == 0) {
         char c;
-        float f1, f2;
-        if (!read_in_format(line, &index, token, "c,f,f", &c, &f1, &f2)) {
+        double d1, d2;
+        if (!read_in_format(line, &index, token, "c,f,f", &c, &d1, &d2)) {
             return 0;
         }
-        nums[c - 'A'].real_part = f1;
-        nums[c - 'A'].imaginary_part = f2;
+        nums[c - 'A'].real_part = d1;
+        nums[c - 'A'].imaginary_part = d2;
         return 0;
     }
     if (strcmp("add_comp", token) == 0) {
@@ -84,16 +84,16 @@ int execute_command(Complex *nums, char *line, char *token) {
     }
     if (strcmp("mult_comp_real", token) == 0) {
         char c;
-        float f;
-        if (!read_in_format(line, &index, token, "c,f", &c, &f)) {
+        double d;
+        if (!read_in_format(line, &index, token, "c,f", &c, &d)) {
             return 0;
         }
-        print_complex(multReal(nums[c - 'A'], f));
+        print_complex(multReal(nums[c - 'A'], d));
         return 0;
     }
     if (strcmp("mult_comp_img", token) == 0) {
         char c;
-        float f;
+        double f;
         if (!read_in_format(line, &index, token, "c,f", &c, &f)) {
             return 0;
         }

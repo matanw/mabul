@@ -3,10 +3,10 @@
 void print_complex(Complex num);
 
 /*print a real number to stdout*/
-void print_real(float num);
+void print_real(double num);
 
 /*resolves the problem of print "-0"*/
-float fix_minus_zero(float num);
+double fix_minus_zero(double num);
 
 
 /*init a complex numbers*/

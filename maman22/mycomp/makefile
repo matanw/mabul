@@ -1,4 +1,4 @@
-COMPILE_COMMAND=gcc -c -ansi -Wall -pedantic
+COMPILE_COMMAND=gcc -c -ansi -Wall -pedantic -lm
 
 complex.o:  complex.c complex.h
 	$(COMPILE_COMMAND) complex.c

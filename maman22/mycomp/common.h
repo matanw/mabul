@@ -1,1 +1,2 @@
 #define NUM_OF_COMPLEXEX 6
+#define MAX_LINE_LENGTH 256

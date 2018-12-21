@@ -9,7 +9,7 @@ command_parse.o:  command_parse.c command_parse.h common.h
 mycomp.o:  mycomp.c complex.h command_parse.h common.h
 	$(COMPILE_COMMAND) mycomp.c
 
-build:  mycomp.o complex.o command_parse.o
+mycomp:  mycomp.o complex.o command_parse.o
 	gcc -o mycomp mycomp.o complex.o command_parse.o
 
 clean:

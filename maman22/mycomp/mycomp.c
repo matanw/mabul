@@ -7,23 +7,29 @@
 #include "common.h"
 
 
+/*print a complex number to stdout*/
 void print_complex(Complex num) {
     printf("%.6g+(%.6g)i\n", fix_minus_zero(num.real_part), fix_minus_zero(num.imaginary_part));
 }
 
+/*print a real number to stdout*/
 void print_real(float num) {
     printf("%.6g\n", fix_minus_zero(num));
 }
 
+/*resolves the problem of print "-0"*/
 float fix_minus_zero(float num) {
     return (num == 0 ? 0 : num);
 }
 
+
+/*init a complex numbers*/
 void init_complex(Complex *num) {
     num->real_part = 0;
     num->imaginary_part = 0;
 }
 
+/*init the array of complex numbers*/
 void init_array(Complex *nums) {
     int i;
     for (i = 0; i <= NUM_OF_COMPLEXEX; i++) {
@@ -31,6 +37,11 @@ void init_array(Complex *nums) {
     }
 }
 
+/*get pointer to array of complex number, line that rea from stdin,
+ * and place to token
+ * (to not allocate and fre every running)
+ * Function executes the command in line, print errors if needed,
+ * and return 1 if it is need to stop the execution, 0 otherwise*/
 int execute_command(Complex *nums, char *line, char *token) {
     int index;
     index = 0;
@@ -116,16 +127,16 @@ int execute_command(Complex *nums, char *line, char *token) {
 }
 
 int main() {
-    Complex nums[NUM_OF_COMPLEXEX];/*todo:ask if array is legal*/
-    char line[30], token[30];/*todo:if i can assume length of line?*/
+    Complex nums[NUM_OF_COMPLEXEX];
+    char line[MAX_LINE_LENGTH], token[MAX_LINE_LENGTH];
     init_array(nums);
     while (fgets(line, sizeof line, stdin)) {
         puts(line);
-        if(execute_command(nums, line, token)){
+        if (execute_command(nums, line, token)) {
             return 0;
         }
         printf("\n");
     }
     printf("end of input, stop without stop command");
-    return  0;
+    return 0;
 }

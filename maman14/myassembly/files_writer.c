@@ -24,18 +24,45 @@ void write_object_file_header(ProgramInformation *program_information, FILE *obj
     fprintf(object_file, "%d %d\n", program_information->command_lines->count, program_information->data_lines->count);
 }
 
-int write_files(ProgramInformation *program_information, char *file_name) {
+int write_object_file(char *file_name, ProgramInformation *program_information) {
     FILE *object_file;
     object_file = fopen_with_extension(file_name, OBJECT_FILE_EXTENSION, "w");
     if (object_file == NULL) {
         return 0;
     }
-    write_object_file_header(program_information, object_file);
-    for_each_with_aside_var(program_information->command_lines, (void (*)(void *, void *)) write_command_line_in_base64,
+    write_object_file_header(program_information, object_file
+    );
+    for_each_with_aside_var(program_information
+                                    ->command_lines, (void (*)(void *, void *)) write_command_line_in_base64,
                             object_file);
-    for_each_with_aside_var(program_information->data_lines, (void (*)(void *, void *)) write_bits_in_base64,
+    for_each_with_aside_var(program_information
+                                    ->data_lines, (void (*)(void *, void *)) write_bits_in_base64,
                             object_file);
     fclose(object_file);
+    return 1;
+}
+
+
+void write_entry(SharedLabel *entry, FILE *entries_file) {
+    fprintf(entries_file, "%s %d\n", entry->label, entry->code_address);
+}
+
+int write_entries_file(char *file_name, ProgramInformation *program_information) {
+    FILE *entries_file;
+    entries_file = fopen_with_extension(file_name, ENTRIES_FILE_EXTENSION, "w");
+    if (entries_file == NULL) {
+        return 0;
+    }
+    for_each_with_aside_var(program_information
+                                    ->entries, (void (*)(void *, void *)) write_entry,
+                            entries_file);
+    fclose(entries_file);
+    return 1;
+}
+
+int write_files(ProgramInformation *program_information, char *file_name) {
+    write_object_file(file_name, program_information);
+    write_entries_file(file_name, program_information);
     return 1;
 }
 

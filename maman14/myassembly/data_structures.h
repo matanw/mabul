@@ -23,6 +23,7 @@ typedef struct label_data {
 typedef struct shared_label {
     char *label;
     int source_line_number;
+    int code_address;/*todo: relevant only for entries, need separate entries /external */
 } SharedLabel;
 typedef struct program_information {
     List *command_lines;

@@ -1,0 +1,54 @@
+print_comp 
+
+expected var name, but found end of string
+print_comp B a
+
+expected end of string, but found 'a'
+read_comp A, 45.j1, -23.5 
+
+'45.j1' is not a valid number
+read_comp A, aasa, -23.5 
+
+'aasa' is not a valid number
+read_comp B, 10, 3 ,4
+
+expected end of string, but found ','
+print_complex B 
+
+Unrecognized command name: print_complex
+read_comp G, 0, -1 
+
+var name 'G' is not in range 'A'..'F'
+print_comp 0
+
+var name '0' is not in range 'A'..'F'
+add_comp A
+
+expected comma, but found end of string
+sub_comp A, 345
+
+var name '345' is more that 1 character
+sub_comp B, 
+
+expected var name, but found end of string
+mult_comp_real A 0.1
+
+expected comma, but found '0.1'
+mult_comp_img A, D
+
+'D' is not a valid number
+mult_comp_comp C, 1
+
+var name '1' is not in range 'A'..'F'
+mult_comp_comp C, D, D
+
+expected end of string, but found ','
+read_comp D, 13e, 1
+
+'13e' is not a valid number
+abs_comp D1
+
+var name 'D1' is more that 1 character
+abs_comp
+expected var name, but found end of string
+end of input, stop without stop command

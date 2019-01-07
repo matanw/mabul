@@ -32,7 +32,7 @@ void init_complex(Complex *num) {
 /*init the array of complex numbers*/
 void init_array(Complex *nums) {
     int i;
-    for (i = 0; i <= NUM_OF_COMPLEXEX; i++) {
+    for (i = 0; i < NUM_OF_COMPLEXEX; i++) {
         init_complex(&nums[i]);
     }
 }

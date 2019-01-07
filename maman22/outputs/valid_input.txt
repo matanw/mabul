@@ -1,0 +1,77 @@
+print_comp A
+
+0+(0)i
+
+print_comp B
+
+0+(0)i
+
+print_comp C
+
+0+(0)i
+
+read_comp A, 45.1, -23.5 
+
+
+print_comp A
+
+45.1+(-23.5)i
+
+read_comp B, 10, 3
+
+
+print_comp B 
+
+10+(3)i
+
+read_comp C, 0, -1 
+
+
+print_comp C 
+
+0+(-1)i
+
+add_comp A, B 
+
+55.1+(-20.5)i
+
+sub_comp A, C
+
+45.1+(-22.5)i
+
+sub_comp B, B
+
+0+(0)i
+
+mult_comp_real A, 0.1
+
+4.51+(-2.35)i
+
+mult_comp_img A, 0
+
+0+(0)i
+
+mult_comp_comp C, C
+
+-1+(0)i
+
+mult_comp_comp C, D
+
+0+(0)i
+
+read_comp D, 1, 1
+
+
+abs_comp D
+
+1.41421
+
+abs_comp C
+
+1
+
+abs_comp F
+
+0
+
+stop

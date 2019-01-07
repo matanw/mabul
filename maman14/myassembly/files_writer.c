@@ -49,6 +49,9 @@ void write_entry(SharedLabel *entry, FILE *entries_file) {
 
 int write_entries_file(char *file_name, ProgramInformation *program_information) {
     FILE *entries_file;
+    if (program_information->entries->count == 0) {
+        return 1;
+    }
     entries_file = fopen_with_extension(file_name, ENTRIES_FILE_EXTENSION, "w");
     if (entries_file == NULL) {
         return 0;

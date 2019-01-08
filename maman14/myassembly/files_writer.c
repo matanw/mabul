@@ -43,7 +43,7 @@ int write_object_file(char *file_name, ProgramInformation *program_information) 
 }
 
 
-void write_entry(SharedLabel *entry, FILE *entries_file) {
+void write_entry(Entry *entry, FILE *entries_file) {
     fprintf(entries_file, "%s %d\n", entry->label, entry->code_address);
 }
 

@@ -20,11 +20,11 @@ typedef struct label_data {
     section_type section_type;
 } LabelData;
 
-typedef struct shared_label {
+typedef struct entry {
     char *label;
     int source_line_number;
-    int code_address;/*todo: relevant only for entries, need separate entries /external */
-} SharedLabel;
+    int code_address;
+} Entry;
 typedef struct program_information {
     List *command_lines;
     List *data_lines;

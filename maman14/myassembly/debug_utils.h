@@ -10,7 +10,7 @@ void print_label_data(LabelData *label_data);
 
 void print_num(int *num);
 
-void print_shared_label(SharedLabel *shared_label);
+void print_entry(Entry *entry);
 
 void print_program_information(ProgramInformation *program_information);
 

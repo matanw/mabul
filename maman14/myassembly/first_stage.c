@@ -78,10 +78,10 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
         handle_string(token, line, &index, program_information);
         section_type = Data;
     } else if (strcmp(token, ENTRY_PREFIX) == 0) {
-        handle_shared_label(line, token, &index, program_information->entries, program_information);
+        handle_entry(line, token, &index, program_information);
         section_type = None;
     } else if (strcmp(token, EXTERNAL_PREFIX) == 0) {
-        handle_shared_label(line, token, &index, program_information->external, program_information);
+        handle_extern(line, token, &index, program_information);
         section_type = None;
     } else {
         handle_operation(token, line, &index, program_information);
@@ -90,8 +90,7 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
     handle_label(label, section_type, old_command_lines_count, old_data_lines_count, program_information);
 }
 
-void
-handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information) {
+void handle_entry(char *line, char *place_to_token, int *index, ProgramInformation *program_information) {
     if (!get_next_token(line, index, place_to_token)) {
         printf("expected label name, found end of string");
         program_information->is_in_error = 1;
@@ -102,7 +101,27 @@ handle_shared_label(char *line, char *place_to_token, int *index, List *list, Pr
         program_information->is_in_error = 1;
         return;
     }
-    add(list, get_shared_label(get_string_copy(place_to_token), program_information->source_line_number));
+    add(program_information->entries,
+        get_entry(get_string_copy(place_to_token), program_information->source_line_number));
+    if (get_next_token(line, index, place_to_token)) {
+        printf("expected end of string but found '%s'", place_to_token);
+        program_information->is_in_error = 1;
+        return;
+    }
+}
+
+void handle_extern(char *line, char *place_to_token, int *index, ProgramInformation *program_information) {
+    if (!get_next_token(line, index, place_to_token)) {
+        printf("expected label name, found end of string");
+        program_information->is_in_error = 1;
+        return;
+    }
+    if (!is_legal_label(place_to_token)) {
+        printf("'%s' is not a legal label", place_to_token);
+        program_information->is_in_error = 1;
+        return;
+    }
+    add(program_information->external, get_string_copy(place_to_token));
     if (get_next_token(line, index, place_to_token)) {
         printf("expected end of string but found '%s'", place_to_token);
         program_information->is_in_error = 1;
@@ -436,12 +455,12 @@ LabelData *get_label_data(char *label, int code_address, section_type section_ty
     return label_data;
 }
 
-SharedLabel *get_shared_label(char *label, int source_line_number) {
-    SharedLabel *sharedLabel;
-    sharedLabel = malloc(sizeof(sharedLabel));
-    sharedLabel->label = label;
-    sharedLabel->source_line_number = source_line_number;
-    return sharedLabel;
+Entry *get_entry(char *label, int source_line_number) {
+    Entry *entry;
+    entry = malloc(sizeof(entry));
+    entry->label = label;
+    entry->source_line_number = source_line_number;
+    return entry;
 }
 
 int *get_copy_of_int(int num) {

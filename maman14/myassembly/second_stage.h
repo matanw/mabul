@@ -11,6 +11,6 @@ void do_second_stage_for_file(ProgramInformation *program_information);
 
 void fill_label(CommandLine *command_line, ProgramInformation *program_information);
 
-void fill_entry(SharedLabel *entry, ProgramInformation *program_information);
+void fill_entry(Entry *entry, ProgramInformation *program_information);
 
 #endif

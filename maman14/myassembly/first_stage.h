@@ -28,8 +28,9 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
 void handle_label(char *label, section_type section_type, int old_command_lines_count, int old_data_lines_count,
                   ProgramInformation *program_information);
 
-void
-handle_shared_label(char *line, char *place_to_token, int *index, List *list, ProgramInformation *program_information);
+void handle_entry(char *line, char *place_to_token, int *index, ProgramInformation *program_information);
+
+void handle_extern(char *line, char *place_to_token, int *index, ProgramInformation *program_information);
 
 void handle_numbers(char *place_to_token, char *line, int *index, ProgramInformation *program_information);
 
@@ -49,7 +50,7 @@ void handle_operation_without_arguments(operation op, char *line, int *index, Pr
 
 CommandLine *get_command_line(int bits, int source_line_number, char *label);
 
-SharedLabel *get_shared_label(char *label, int source_line_number);
+Entry *get_entry(char *label, int source_line_number);
 
 int *get_copy_of_int(int num);
 

@@ -56,7 +56,7 @@ void fill_label(CommandLine *command_line, ProgramInformation *program_informati
 
 }
 
-void fill_entry(SharedLabel* entry,ProgramInformation * program_information){
+void fill_entry(Entry* entry,ProgramInformation * program_information){
     LabelData *label_data;
     if ((label_data = search(program_information->label_datas, entry->label,
                              (int (*)(void *, void *)) compare_label_data_to_string2))) {

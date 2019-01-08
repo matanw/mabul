@@ -22,8 +22,12 @@ void print_num(int *num) {
     printf("\n");
 }
 
-void print_shared_label(SharedLabel *shared_label) {
-    printf("%s, line %d\n", shared_label->label, shared_label->source_line_number);
+void print_entry(Entry *entry) {
+    printf("%s, line %d\n", entry->label, entry->source_line_number);
+}
+
+void print_string(char *string) {
+    printf("%s\n", string);
 }
 
 void print_program_information(ProgramInformation *program_information) {
@@ -34,9 +38,9 @@ void print_program_information(ProgramInformation *program_information) {
     printf("data_lines:\n");
     for_each(program_information->data_lines, (void (*)(void *)) print_num);
     printf("entries:\n");
-    for_each(program_information->entries, (void (*)(void *)) print_shared_label);
+    for_each(program_information->entries, (void (*)(void *)) print_entry);
     printf("externals:\n");
-    for_each(program_information->external, (void (*)(void *)) print_shared_label);
+    for_each(program_information->external, (void (*)(void *)) print_string);
 }
 
 

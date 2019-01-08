@@ -12,9 +12,9 @@ void free_command_line_indirect(CommandLine *command_line) {
         free(command_line->label);
 }
 
-void free_shared_label(SharedLabel *shared_label) {
-    if (shared_label->label != NULL)
-        free(shared_label->label);
+void free_entry(Entry *entry) {
+    if (entry->label != NULL)
+        free(entry->label);
 }
 
 void free_program_information(ProgramInformation *program_information) {
@@ -26,8 +26,8 @@ void free_program_information(ProgramInformation *program_information) {
     free_list(program_information->data_lines, (void (*)(void *))
             NULL);
     free_list(program_information->entries, (void (*)(void *))
-            free_shared_label);
+            free_entry);
     free_list(program_information->external, (void (*)(void *))
-            free_shared_label);
+            NULL);
     free(program_information);
 }

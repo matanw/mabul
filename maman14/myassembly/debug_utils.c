@@ -30,6 +30,10 @@ void print_string(char *string) {
     printf("%s\n", string);
 }
 
+void print_external_record(ExternalRecord *external_record) {
+    printf("%s - %d\n", external_record->label, external_record->code_address);
+}
+
 void print_program_information(ProgramInformation *program_information) {
     printf("command_lines:\n");
     for_each(program_information->command_lines, (void (*)(void *)) print_command_line);
@@ -41,6 +45,8 @@ void print_program_information(ProgramInformation *program_information) {
     for_each(program_information->entries, (void (*)(void *)) print_entry);
     printf("externals:\n");
     for_each(program_information->external, (void (*)(void *)) print_string);
+    printf("external records:\n");
+    for_each(program_information->external_records, (void (*)(void *)) print_external_record);
 }
 
 

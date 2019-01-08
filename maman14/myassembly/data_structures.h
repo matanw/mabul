@@ -25,12 +25,17 @@ typedef struct entry {
     int source_line_number;
     int code_address;
 } Entry;
+typedef struct external_record {
+    char *label;
+    int code_address;
+} ExternalRecord;
 typedef struct program_information {
     List *command_lines;
     List *data_lines;
     List *label_datas;
     List *entries;
     List *external;
+    List *external_records;
     int source_line_number;
     int is_in_error;
 } ProgramInformation;

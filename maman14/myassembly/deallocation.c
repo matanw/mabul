@@ -17,6 +17,11 @@ void free_entry(Entry *entry) {
         free(entry->label);
 }
 
+void free_external_record(ExternalRecord *external_record) {
+    if (external_record->label != NULL)
+        free(external_record->label);
+}
+
 void free_program_information(ProgramInformation *program_information) {
 
     free_list(program_information->command_lines, (void (*)(void *))
@@ -29,5 +34,7 @@ void free_program_information(ProgramInformation *program_information) {
             free_entry);
     free_list(program_information->external, (void (*)(void *))
             NULL);
+    free_list(program_information->external_records, (void (*)(void *))
+            free_external_record);
     free(program_information);
 }

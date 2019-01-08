@@ -5,7 +5,7 @@
 #include "command_parse.h"
 #include "debug_utils.h"
 #include "bits_operations.h"
-#include "io_utils.h"
+#include "utils.h"
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -37,6 +37,7 @@ ProgramInformation *init_program_information() {
     program_information->label_datas = init_list();
     program_information->entries = init_list();
     program_information->external = init_list();
+    program_information->external_records = init_list();
     program_information->source_line_number = 0;
     program_information->is_in_error = 0;
     return program_information;
@@ -437,13 +438,6 @@ int fill_argument_details(char *token, ArgumentDetails *argument_details) {
         return 1;
     }
     return 0;
-}
-
-char *get_string_copy(char *str) {/*todo:move*/
-    char *res;
-    res = malloc((strlen(str) + 1) * sizeof(char));
-    strcpy(res, str);
-    return res;
 }
 
 LabelData *get_label_data(char *label, int code_address, section_type section_type) {

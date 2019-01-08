@@ -1,5 +1,5 @@
 #include "files_writer.h"
-#include "io_utils.h"
+#include "utils.h"
 #include "constants.h"
 
 
@@ -43,8 +43,8 @@ int write_object_file(char *file_name, ProgramInformation *program_information) 
 }
 
 
-void write_entry(Entry *entry, FILE *entries_file) {
-    fprintf(entries_file, "%s %d\n", entry->label, entry->code_address);
+void write_entry(Entry *entry, FILE *file) {
+    fprintf(file, "%s %d\n", entry->label, entry->code_address);
 }
 
 int write_entries_file(char *file_name, ProgramInformation *program_information) {
@@ -63,9 +63,30 @@ int write_entries_file(char *file_name, ProgramInformation *program_information)
     return 1;
 }
 
+void write_external_record(ExternalRecord *external_record, FILE *file) {
+    fprintf(file, "%s %d\n", external_record->label, external_record->code_address);
+}
+
+int write_externals_file(char *file_name, ProgramInformation *program_information) {
+    FILE *externals_file;
+    if (program_information->entries->count == 0) {
+        return 1;
+    }
+    externals_file = fopen_with_extension(file_name, EXTERNAL_FILE_EXTENSION, "w");
+    if (externals_file == NULL) {
+        return 0;
+    }
+    for_each_with_aside_var(program_information
+                                    ->external_records, (void (*)(void *, void *)) write_external_record,
+                            externals_file);
+    fclose(externals_file);
+    return 1;
+}
+
 int write_files(ProgramInformation *program_information, char *file_name) {
     write_object_file(file_name, program_information);
     write_entries_file(file_name, program_information);
+    write_externals_file(file_name, program_information);
     return 1;
 }
 

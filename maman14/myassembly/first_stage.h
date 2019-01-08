@@ -60,8 +60,6 @@ operation get_operation(char *op);
 
 int fill_argument_details(char *token, ArgumentDetails *argument_details);
 
-char *get_string_copy(char *str);
-
 LabelData *get_label_data(char *label, int code_address, section_type section_type);
 
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,

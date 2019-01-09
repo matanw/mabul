@@ -23,4 +23,8 @@ temp_code/
 tests/
 toSend*
 *screenshots*
+*.ob
+*.ext
+*.ent
+
 

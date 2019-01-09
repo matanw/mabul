@@ -10,6 +10,19 @@
 #include <stddef.h>
 #include <string.h>
 
+
+#include <stdarg.h>
+
+/*todo: move to modoule*/
+void print_error(ProgramInformation *program_information, const char *format, ...) {
+    va_list arg_ptr;
+    va_start(arg_ptr, format);
+    fprintf(stderr, "Error in file %s.as, line %d:", program_information->file_name,
+            program_information->source_line_number);
+    vfprintf(stderr, format, arg_ptr);
+    va_end(arg_ptr);
+}
+
 ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) {
     char line[MAX_LINE_LENGTH];
     ProgramInformation *program_information;
@@ -228,7 +241,7 @@ void handle_operation(char *token, char *line, int *index, ProgramInformation *p
     int arguments_num;
     op = get_operation(token);
     if (op == Unknown) {
-        printf("command not found :%s\n", token);
+        print_error(program_information, "command not found :%s\n", token);
         program_information->is_in_error = 1;
         return;
     }

@@ -1,22 +1,17 @@
 
+#include <string.h>
 #include "first_stage.h"
 #include "second_stage.h"
 #include "files_writer.h"
 #include "deallocation.h"
 
+#define  DEBUG_FLAG "-d"
 
-int main1123(int argc, char *argv[]) {
+int get_is_debug_mode(int argc, char *argv[]) {
     int i;
-    if (argc == 1) {
-        printf("Supply file name\n");
-        return 0;
-    }
     for (i = 1; i < argc; i++) {
-        printf("str is [%s]\n", argv[i]);
-        if (argv[i]) {
-            printf("label\n");
-        } else {
-            printf("not a l\n");
+        if (strcmp(argv[i], DEBUG_FLAG) == 0) {
+            return 1;
         }
     }
     return 0;
@@ -24,14 +19,19 @@ int main1123(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
     int i;
+    int is_debug_mode;
     if (argc == 1) {
         printf("Supply file name\n");
         return 0;
     }
-
+    is_debug_mode = get_is_debug_mode(argc, argv);
     for (i = 1; i < argc; i++) {
+        ProgramInformation *program_information;
         char *file_name = argv[i];
-        ProgramInformation *program_information = do_first_stage_for_file(file_name);
+        if (strcmp(argv[i], DEBUG_FLAG) == 0) {
+            continue;
+        }
+        program_information = do_first_stage_for_file(file_name, is_debug_mode);
         if (program_information == NULL) {
             printf("cannot read file");
             continue;

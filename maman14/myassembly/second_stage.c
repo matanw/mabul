@@ -12,11 +12,13 @@ void do_second_stage_for_file(ProgramInformation *program_information) {
     /*todo:assertions*/
     for_each_with_aside_var_B(program_information->command_lines, (void (*)(void *, void *, int)) fill_command_line,
                               program_information);
-    printf("fill line ended\n");
     for_each_with_aside_var(program_information->entries, (void (*)(void *, void *)) fill_entry,
                             program_information);
 
-    print_program_information(program_information);
+    if (program_information->is_debug_mode) {
+        printf("***after second stage:***\n");
+        print_program_information(program_information);
+    }
 }
 
 void fill_are(CommandLine *command_line, are are) {
@@ -55,7 +57,6 @@ void fill_command_line(CommandLine *command_line, ProgramInformation *program_in
                                     (int (*)(void *, void *)) compare_label_data_to_string2))) {
         int real_code_address;
         real_code_address = get_real_code_address(label_data, program_information);
-        printf("code address %d\n", real_code_address);
         fill_address(command_line, real_code_address);
         fill_are(command_line, Relocatable);
         free(command_line->label);

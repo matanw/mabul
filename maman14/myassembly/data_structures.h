@@ -30,6 +30,7 @@ typedef struct external_record {
     int code_address;
 } ExternalRecord;
 typedef struct program_information {
+    int is_debug_mode;
     List *command_lines;
     List *data_lines;
     List *label_datas;

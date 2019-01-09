@@ -10,28 +10,30 @@
 #include <stddef.h>
 #include <string.h>
 
-ProgramInformation *do_first_stage_for_file(char *file_name) {
+ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) {
     char line[MAX_LINE_LENGTH];
     ProgramInformation *program_information;
     FILE *file = fopen_with_extension(file_name, SOURCE_FILE_EXTENSION, "r");
     if (file == NULL) {
         return NULL;
     }
-    program_information = init_program_information(file_name);
+    program_information = init_program_information(file_name, is_debug_mode);
 
     while (fgets(line, sizeof line, file)) {
         program_information->source_line_number++;
         do_first_stage_for_line(line, program_information);
     }
     fclose(file);
-
-    print_program_information(program_information);
-
+    if (program_information->is_debug_mode) {
+        printf("***after first stage:***\n");
+        print_program_information(program_information);
+    }
     return program_information;
 }
 
-ProgramInformation *init_program_information(char *file_name) {
+ProgramInformation *init_program_information(char *file_name, int is_debug_mode) {
     ProgramInformation *program_information = malloc(sizeof(ProgramInformation));
+    program_information->is_debug_mode = is_debug_mode;
     program_information->command_lines = init_list();
     program_information->data_lines = init_list();
     program_information->label_datas = init_list();
@@ -214,7 +216,6 @@ void handle_string(char *place_to_token, char *line, int *index, ProgramInformat
         return;
     }
     c = place_to_token;
-    printf("\n token-[%s]\n", place_to_token);
     while (*c) {
         add(program_information->data_lines, get_copy_of_int((int) *c));
         c++;

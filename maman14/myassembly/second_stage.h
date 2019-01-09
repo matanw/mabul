@@ -9,7 +9,7 @@ typedef enum ARE {
 
 void do_second_stage_for_file(ProgramInformation *program_information);
 
-void fill_command_line(CommandLine *command_line, ProgramInformation *program_information);
+void fill_command_line(CommandLine *command_line, ProgramInformation *program_information, int index);
 
 void fill_entry(Entry *entry, ProgramInformation *program_information);
 

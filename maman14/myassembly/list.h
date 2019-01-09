@@ -22,6 +22,8 @@ void for_each(List *list, void (*action)(void *));
 
 void for_each_with_aside_var(List *list, void (*action)(void *, void *), void *aside_var);
 
+void for_each_with_aside_var_B(List *list, void (*action)(void *, void *, int), void *aside_var);
+
 void free_list(List *list, void (*free_val)(void *));
 
 void *search(List *list, void *val, int (*cmp)(void *, void *));

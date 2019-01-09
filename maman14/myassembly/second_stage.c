@@ -10,8 +10,9 @@
 
 void do_second_stage_for_file(ProgramInformation *program_information) {
     /*todo:assertions*/
-    for_each_with_aside_var(program_information->command_lines, (void (*)(void *, void *)) fill_command_line,
-                            program_information);
+    for_each_with_aside_var_B(program_information->command_lines, (void (*)(void *, void *, int)) fill_command_line,
+                              program_information);
+    printf("fill line ended\n");
     for_each_with_aside_var(program_information->entries, (void (*)(void *, void *)) fill_entry,
                             program_information);
 
@@ -46,7 +47,7 @@ ExternalRecord *get_external_record(char *label,
     return external_record;
 }
 
-void fill_command_line(CommandLine *command_line, ProgramInformation *program_information) {
+void fill_command_line(CommandLine *command_line, ProgramInformation *program_information, int index) {
     LabelData *label_data;
     if (command_line->label == NULL) {
         fill_are(command_line, Absolute);
@@ -62,14 +63,14 @@ void fill_command_line(CommandLine *command_line, ProgramInformation *program_in
     } else if (search(program_information->external, command_line->label,
                       (int (*)(void *, void *)) strcmp)) {
         int real_code_address;
-        real_code_address = get_real_code_address(label_data, program_information);
+        real_code_address = INITIAL_CODE_ADDRESS + index;
         add(program_information->external_records, get_external_record
                 (get_string_copy(command_line->label), real_code_address));
         fill_are(command_line, External);
         free(command_line->label);
         command_line->label = NULL;
     } else {
-        /*todo:error*/
+/*todo:error*/
     }
 }
 

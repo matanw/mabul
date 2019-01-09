@@ -41,6 +41,17 @@ void for_each_with_aside_var(List *list, void (*action)(void *, void *), void *a
     }
 }
 
+/*todo:merge 2 for each es*/
+void for_each_with_aside_var_B(List *list, void (*action)(void *, void *, int), void *aside_var) {
+    int i = 0;
+    Node *pos = list->first;
+    while (pos != NULL) {
+        action(pos->val, aside_var, i);
+        pos = pos->next;
+        i++;
+    }
+}
+
 void *search(List *list, void *val, int (*cmp)(void *, void *)) {
     Node *pos = list->first;
     while (pos != NULL) {

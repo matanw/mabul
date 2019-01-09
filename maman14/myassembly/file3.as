@@ -7,7 +7,7 @@ LOOP: jmp L1
       prn -5
       bne W
       sub @r1, @r4
-      bne L1
+      bne L3
 L1:  inc K
 .entry LOOP
       jmp W

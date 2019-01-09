@@ -21,7 +21,7 @@ typedef struct argument_details {
 
 ProgramInformation *do_first_stage_for_file(char *file_name);
 
-ProgramInformation *init_program_information();
+ProgramInformation *init_program_information(char *file_name);
 
 void do_first_stage_for_line(char *line, ProgramInformation *program_information);
 

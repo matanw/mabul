@@ -36,5 +36,6 @@ void free_program_information(ProgramInformation *program_information) {
             NULL);
     free_list(program_information->external_records, (void (*)(void *))
             free_external_record);
+    free(program_information->file_name);
     free(program_information);
 }

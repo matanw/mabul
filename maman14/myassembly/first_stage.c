@@ -17,7 +17,7 @@ ProgramInformation *do_first_stage_for_file(char *file_name) {
     if (file == NULL) {
         return NULL;
     }
-    program_information = init_program_information();
+    program_information = init_program_information(file_name);
 
     while (fgets(line, sizeof line, file)) {
         program_information->source_line_number++;
@@ -30,7 +30,7 @@ ProgramInformation *do_first_stage_for_file(char *file_name) {
     return program_information;
 }
 
-ProgramInformation *init_program_information() {
+ProgramInformation *init_program_information(char *file_name) {
     ProgramInformation *program_information = malloc(sizeof(ProgramInformation));
     program_information->command_lines = init_list();
     program_information->data_lines = init_list();
@@ -40,6 +40,7 @@ ProgramInformation *init_program_information() {
     program_information->external_records = init_list();
     program_information->source_line_number = 0;
     program_information->is_in_error = 0;
+    program_information->file_name = get_string_copy(file_name);
     return program_information;
 
 }

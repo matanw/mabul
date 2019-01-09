@@ -36,6 +36,7 @@ typedef struct program_information {
     List *entries;
     List *external;
     List *external_records;
+    char *file_name;
     int source_line_number;
     int is_in_error;
 } ProgramInformation;

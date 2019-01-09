@@ -30,13 +30,14 @@ int main(int argc, char *argv[]) {
     }
 
     for (i = 1; i < argc; i++) {
-        ProgramInformation *program_information = do_first_stage_for_file(argv[i]);
+        char *file_name = argv[i];
+        ProgramInformation *program_information = do_first_stage_for_file(file_name);
         if (program_information == NULL) {
             printf("cannot read file");
             continue;
         }
         do_second_stage_for_file(program_information);
-        write_files(program_information, argv[i]);
+        write_files(program_information);
         free_program_information(program_information);
     }
 }

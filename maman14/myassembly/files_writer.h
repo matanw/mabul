@@ -4,6 +4,6 @@
 
 #include "data_structures.h"
 
-int write_files(ProgramInformation *program_information, char *file_name);
+int write_files(ProgramInformation *program_information);
 
 #endif

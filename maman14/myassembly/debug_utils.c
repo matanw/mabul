@@ -35,6 +35,7 @@ void print_external_record(ExternalRecord *external_record) {
 }
 
 void print_program_information(ProgramInformation *program_information) {
+    printf("file name:%s\n",program_information->file_name);
     printf("command_lines:\n");
     for_each(program_information->command_lines, (void (*)(void *)) print_command_line);
     printf("labels :\n");

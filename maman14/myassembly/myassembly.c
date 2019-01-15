@@ -36,7 +36,14 @@ int main(int argc, char *argv[]) {
             printf("cannot read file");
             continue;
         }
+        if (program_information->is_in_error) {
+            continue;/*todo:print something?*/
+        }
         do_second_stage_for_file(program_information);
+
+        if (program_information->is_in_error) {
+            continue;/*todo:print something?*/
+        }
         write_files(program_information);
         free_program_information(program_information);
     }

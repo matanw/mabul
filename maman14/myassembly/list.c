@@ -52,6 +52,19 @@ void for_each_with_aside_var_B(List *list, void (*action)(void *, void *, int), 
     }
 }
 
+/*action: list1, list2, var_aside*/
+void for_each_on_cartesian_product(List *list1, List *list2, void (*action)(void *, void *, void *), void *aside_var) {
+    Node *pos1 = list1->first;
+    while (pos1 != NULL) {
+        Node *pos2 = list2->first;
+        while (pos2 != NULL) {
+            action(pos1->val, pos2->val, aside_var);
+            pos2 = pos2->next;
+        }
+        pos1 = pos1->next;
+    }
+}
+
 void *search(List *list, void *val, int (*cmp)(void *, void *)) {
     Node *pos = list->first;
     while (pos != NULL) {

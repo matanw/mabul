@@ -13,4 +13,11 @@ void fill_command_line(CommandLine *command_line, ProgramInformation *program_in
 
 void fill_entry(Entry *entry, ProgramInformation *program_information);
 
+
+void assert_duplication_labels(LabelData *label_data1, LabelData *label_data2,
+                               ProgramInformation *program_information);
+
+void assert_label_and_external_not_equals(LabelData *label_data, char *external,
+                                          ProgramInformation *program_information);
+
 #endif

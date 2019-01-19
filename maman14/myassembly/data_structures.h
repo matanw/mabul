@@ -17,6 +17,7 @@ typedef enum SECTION_TYPE {
 typedef struct label_data {
     char *label;
     int code_address;
+    int source_line_number;
     section_type section_type;
 } LabelData;
 

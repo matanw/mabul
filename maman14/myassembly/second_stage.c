@@ -10,10 +10,21 @@
 #include <string.h>
 
 void do_second_stage_for_file(ProgramInformation *program_information) {
-    /*todo:assertions*/
-    for_each_with_aside_var_B(program_information->command_lines, (void (*)(void *, void *, int)) fill_command_line,
+    for_each_on_cartesian_product(program_information->label_datas,
+                                  program_information->label_datas,
+                                  (void (*)(void *, void *, void *)) assert_duplication_labels,
+                                  program_information);
+
+    for_each_on_cartesian_product(program_information->label_datas,
+                                  program_information->external,
+                                  (void (*)(void *, void *, void *)) assert_label_and_external_not_equals,
+                                  program_information);
+
+    for_each_with_aside_var_B(program_information->command_lines,
+                              (void (*)(void *, void *, int)) fill_command_line,
                               program_information);
-    for_each_with_aside_var(program_information->entries, (void (*)(void *, void *)) fill_entry,
+    for_each_with_aside_var(program_information->entries,
+                            (void (*)(void *, void *)) fill_entry,
                             program_information);
 
     if (program_information->is_debug_mode) {
@@ -91,4 +102,21 @@ void fill_entry(Entry *entry, ProgramInformation *program_information) {
     }
 }
 
+void assert_duplication_labels(LabelData *label_data1, LabelData *label_data2,
+                               ProgramInformation *program_information) {
+    if (label_data1->source_line_number < label_data2->source_line_number &&
+        strcmp(label_data1->label, label_data2->label) == 0) {
+        handle_error(program_information, label_data2->source_line_number,
+                     "Duplicated label: You cannot define label '%s' because "
+                     "it already defined in line %d", label_data1->label, label_data1->source_line_number);
+    }
+}
 
+void assert_label_and_external_not_equals(LabelData *label_data, char *external,
+                                          ProgramInformation *program_information) {
+    if (strcmp(label_data->label, external) == 0) {
+        handle_error(program_information, label_data->source_line_number,
+                     "Label an external: You cannot define label '%s' because "
+                     "it defined as .extern", label_data->label);
+    }
+}

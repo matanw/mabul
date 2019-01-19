@@ -151,14 +151,8 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
         free(label);
         return;
     }
-    if (search(program_information->label_datas, label, (int (*)(void *, void *)) compare_label_data_to_string) !=
-        NULL) {
-        handle_error(program_information, program_information->source_line_number, "'%s' already exists", label);
-        free(label);
-        return;
-    }
     count_to_insert = (section_type == Command ? old_command_lines_count : old_data_lines_count);
-    label_data = get_label_data(label, count_to_insert, section_type);
+    label_data = get_label_data(label, count_to_insert, section_type,program_information->source_line_number);
     add(program_information->label_datas, label_data);
 }
 
@@ -440,12 +434,14 @@ int fill_argument_details(char *token, ArgumentDetails *argument_details) {
     return 0;
 }
 
-LabelData *get_label_data(char *label, int code_address, section_type section_type) {
+LabelData *get_label_data(char *label, int code_address, section_type section_type,
+                          int source_line_number) {
     LabelData *label_data;
     label_data = malloc(sizeof(LabelData));
     label_data->label = label;
     label_data->code_address = code_address;
     label_data->section_type = section_type;
+    label_data->source_line_number=source_line_number;
     return label_data;
 }
 

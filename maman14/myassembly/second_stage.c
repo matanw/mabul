@@ -116,7 +116,7 @@ void assert_label_and_external_not_equals(LabelData *label_data, char *external,
                                           ProgramInformation *program_information) {
     if (strcmp(label_data->label, external) == 0) {
         handle_error(program_information, label_data->source_line_number,
-                     "Label an external: You cannot define label '%s' because "
+                     "Label and external: You cannot define label '%s' because "
                      "it defined as .extern", label_data->label);
     }
 }

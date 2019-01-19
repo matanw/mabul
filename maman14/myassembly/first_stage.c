@@ -26,7 +26,7 @@ ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) 
     }
     fclose(file);
     if (program_information->is_debug_mode) {
-        handle_error(program_information, program_information->source_line_number, "***after first stage:***\n");
+        printf("***after first stage:***\n");
         print_program_information(program_information);
     }
     return program_information;
@@ -152,7 +152,7 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
         return;
     }
     count_to_insert = (section_type == Command ? old_command_lines_count : old_data_lines_count);
-    label_data = get_label_data(label, count_to_insert, section_type,program_information->source_line_number);
+    label_data = get_label_data(label, count_to_insert, section_type, program_information->source_line_number);
     add(program_information->label_datas, label_data);
 }
 
@@ -441,7 +441,7 @@ LabelData *get_label_data(char *label, int code_address, section_type section_ty
     label_data->label = label;
     label_data->code_address = code_address;
     label_data->section_type = section_type;
-    label_data->source_line_number=source_line_number;
+    label_data->source_line_number = source_line_number;
     return label_data;
 }
 

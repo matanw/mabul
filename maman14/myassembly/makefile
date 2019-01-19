@@ -24,10 +24,13 @@ deallocation.o: deallocation.c deallocation.h data_structures.h list.h
 debug_utils.o: debug_utils.c debug_utils.h constants.h bits_operations.h data_structures.h
 	$(COMPILE_COMMAND) debug_utils.c
 
-first_stage.o: first_stage.c first_stage.h list.h data_structures.h  command_parse.h debug_utils.h bits_operations.h utils.h
+error_handling.o: error_handling.c error_handling.h data_structures.h
+	$(COMPILE_COMMAND) error_handling.c
+
+first_stage.o: first_stage.c first_stage.h list.h data_structures.h error_handling.h  command_parse.h debug_utils.h bits_operations.h utils.h
 	$(COMPILE_COMMAND) first_stage.c
 
-files_writer.o: files_writer.c files_writer.h data_structures.h utils.h constants.h
+files_writer.o: files_writer.c files_writer.h data_structures.h utils.h constants.h error_handling.h
 	$(COMPILE_COMMAND) files_writer.c
 
 list.o:list.c list.h
@@ -36,14 +39,14 @@ list.o:list.c list.h
 utils.o: utils.h utils.c constants.h
 	$(COMPILE_COMMAND) utils.c
 
-second_stage.o: second_stage.c second_stage.h data_structures.h debug_utils.h bits_operations.h list.h constants.h utils.h
+second_stage.o: second_stage.c second_stage.h data_structures.h debug_utils.h bits_operations.h list.h constants.h utils.h error_handling.h
 	$(COMPILE_COMMAND) second_stage.c
 
 myassembly.o:myassembly.c first_stage.h deallocation.h
 	$(COMPILE_COMMAND) myassembly.c
 
-myassembly: myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o
-	gcc -o myassembly myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o
+myassembly: myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o error_handling.o
+	gcc -o myassembly myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o error_handling.o
 
 clean:
 	rm -f myassembly *.o

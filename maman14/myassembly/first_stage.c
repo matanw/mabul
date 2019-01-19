@@ -1,4 +1,7 @@
 
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
 #include "first_stage.h"
 #include "constants.h"
 #include "list.h"
@@ -6,26 +9,7 @@
 #include "debug_utils.h"
 #include "bits_operations.h"
 #include "utils.h"
-#include <stdlib.h>
-#include <stddef.h>
-#include <string.h>
-
-
-#include <stdarg.h>
-
-/*todo: move to modoule*/
-void print_error(ProgramInformation *program_information, const char *format, ...) {
-    va_list arg_ptr;
-    va_start(arg_ptr, format);
-    if (!program_information->is_in_error) {/* there are not errors yet, this is the first in file*/
-
-        fprintf(stderr, "******* Errors in file %s *******\n", program_information->file_name);
-    }
-    fprintf(stderr, "line %d: ", program_information->source_line_number);
-    vfprintf(stderr, format, arg_ptr);
-    fprintf(stderr, "\n");
-    va_end(arg_ptr);
-}
+#include "error_handling.h"
 
 ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) {
     char line[MAX_LINE_LENGTH];
@@ -42,7 +26,7 @@ ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) 
     }
     fclose(file);
     if (program_information->is_debug_mode) {
-        print_error(program_information, "***after first stage:***\n");
+        handle_error(program_information, program_information->source_line_number, "***after first stage:***\n");
         print_program_information(program_information);
     }
     return program_information;
@@ -86,8 +70,7 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
         label = get_string_copy(token);
         if (!get_next_token(line, &index, token))/*blank line*/
         {
-            print_error(program_information, "empty label is illegal");
-            program_information->is_in_error = 1;
+            handle_error(program_information, program_information->source_line_number, "empty label is illegal");
             return;
         }
     }
@@ -113,38 +96,39 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
 
 void handle_entry(char *line, char *place_to_token, int *index, ProgramInformation *program_information) {
     if (!get_next_token(line, index, place_to_token)) {
-        print_error(program_information, "expected label name, found end of string");
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "expected label name, found end of string");
         return;
     }
     if (!is_legal_label(place_to_token)) {
-        print_error(program_information, "'%s' is not a legal label", place_to_token);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number, "'%s' is not a legal label",
+                     place_to_token);
         return;
     }
     add(program_information->entries,
         get_entry(get_string_copy(place_to_token), program_information->source_line_number));
     if (get_next_token(line, index, place_to_token)) {
-        print_error(program_information, "expected end of string but found '%s'", place_to_token);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "expected end of string but found '%s'", place_to_token);
         return;
     }
 }
 
 void handle_extern(char *line, char *place_to_token, int *index, ProgramInformation *program_information) {
     if (!get_next_token(line, index, place_to_token)) {
-        print_error(program_information, "expected label name, found end of string");
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "expected label name, found end of string");
         return;
     }
     if (!is_legal_label(place_to_token)) {
-        print_error(program_information, "'%s' is not a legal label", place_to_token);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number, "'%s' is not a legal label",
+                     place_to_token);
         return;
     }
     add(program_information->external, get_string_copy(place_to_token));
     if (get_next_token(line, index, place_to_token)) {
-        print_error(program_information, "expected end of string but found '%s'", place_to_token);
+        handle_error(program_information, program_information->source_line_number,
+                     "expected end of string but found '%s'", place_to_token);
         program_information->is_in_error = 1;
         return;
     }
@@ -159,22 +143,18 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
     }
     delete_last_char(label);
     if (!is_legal_label(label)) {
-        print_error(program_information, "'%s' is not a legal label", label);
+        handle_error(program_information, program_information->source_line_number, "'%s' is not a legal label", label);
         free(label);
-        program_information->is_in_error = 1;
         return;
     }
     if (section_type == None) {
-        print_error(program_information, "warn: label with .extern or .entity has no meaning");
-        /*no mark error*/
         free(label);
         return;
     }
     if (search(program_information->label_datas, label, (int (*)(void *, void *)) compare_label_data_to_string) !=
         NULL) {
-        print_error(program_information, "'%s' already exists", label);
+        handle_error(program_information, program_information->source_line_number, "'%s' already exists", label);
         free(label);
-        program_information->is_in_error = 1;
         return;
     }
     count_to_insert = (section_type == Command ? old_command_lines_count : old_data_lines_count);
@@ -185,13 +165,13 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
 void handle_numbers(char *place_to_token, char *line, int *index, ProgramInformation *program_information) {
     int num;
     if (!get_next_token(line, index, place_to_token)) {
-        print_error(program_information, "expected number, but found end of string");
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "expected number, but found end of string");
         return;
     }
     if (!parse_number(place_to_token, &num)) {
-        print_error(program_information, "'%s' is not a number", place_to_token);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number, "'%s' is not a number",
+                     place_to_token);
         return;
     }
     add(program_information->data_lines, get_copy_of_int(num));
@@ -201,19 +181,21 @@ void handle_numbers(char *place_to_token, char *line, int *index, ProgramInforma
             return;
         }
         if (strcmp(place_to_token, ",") != 0) {
-            print_error(program_information, "expected comma but '%s' was found", place_to_token);
+            handle_error(program_information, program_information->source_line_number,
+                         "expected comma but '%s' was found", place_to_token);
             program_information->is_in_error = 1;
             return;
         }
 
         if (!get_next_token(line, index, place_to_token)) {
-            print_error(program_information, "expected number, but found end of string");
+            handle_error(program_information, program_information->source_line_number,
+                         "expected number, but found end of string");
             program_information->is_in_error = 1;
             return;
         }
         if (!parse_number(place_to_token, &num)) {
-            print_error(program_information, "'%s' is not a number", place_to_token);
-            program_information->is_in_error = 1;
+            handle_error(program_information, program_information->source_line_number, "'%s' is not a number",
+                         place_to_token);
             return;
         }
         add(program_information->data_lines, get_copy_of_int(num));
@@ -223,13 +205,12 @@ void handle_numbers(char *place_to_token, char *line, int *index, ProgramInforma
 void handle_string(char *place_to_token, char *line, int *index, ProgramInformation *program_information) {
     char *c;
     if (!get_string(line, index, place_to_token)) {
-        print_error(program_information, "error while reading string");
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number, "error while reading string");
         return;
     }
     if (get_next_token(line, index, place_to_token)) {
-        print_error(program_information, "expected end of line after string, but found '%s'", place_to_token);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "expected end of line after string, but found '%s'", place_to_token);
         return;
     }
     c = place_to_token;
@@ -245,8 +226,7 @@ void handle_operation(char *token, char *line, int *index, ProgramInformation *p
     int arguments_num;
     op = get_operation(token);
     if (op == Unknown) {
-        print_error(program_information, "command not found :%s", token);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number, "command not found :%s", token);
         return;
     }
     arguments_num = get_arguments_number(op);
@@ -291,24 +271,24 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
     int command_bits;
     ArgumentDetails source_argument_details, target_argument_details;
     if (!read_two_arguments(line, index, source_argument, target_argument)) {
-        print_error(program_information, "except to 2 arguments but there aren't");
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "except to 2 arguments but there aren't");
         return;
     }
     if (!fill_argument_details(source_argument, &source_argument_details)) {
-        print_error(program_information, "'%s' is not register, number, or valid label name", source_argument);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "'%s' is not register, number, or valid label name", source_argument);
         return;
     }
     if (!fill_argument_details(target_argument, &target_argument_details)) {
-        print_error(program_information, "'%s' is not register, number, or valid label name", target_argument);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "'%s' is not register, number, or valid label name", target_argument);
         return;
     }
 
     if (get_next_token(line, index, source_argument)) {/*todo:another var?*/
-        print_error(program_information, "excepted end of line but found %s", source_argument);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number, "excepted end of line but found %s",
+                     source_argument);
         return;
     }
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details);
@@ -338,17 +318,18 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Prog
     int command_bits, argument_bits;
     ArgumentDetails argument_details;
     if (!get_next_token(line, index, argument)) {
-        print_error(program_information, "except to argument but there isn't");
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "except to argument but there isn't");
         return;
     }
     if (!fill_argument_details(argument, &argument_details)) {
-        print_error(program_information, "'%s' is not register, number, or valid label name", argument);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number,
+                     "'%s' is not register, number, or valid label name", argument);
         return;
     }
     if (get_next_token(line, index, argument)) {/*todo:another var?*/
-        print_error(program_information, "excepted end of line but found %s", argument);
+        handle_error(program_information, program_information->source_line_number, "excepted end of line but found %s",
+                     argument);
         program_information->is_in_error = 1;
         return;
     }
@@ -366,8 +347,8 @@ void handle_operation_without_arguments(operation op, char *line, int *index, Pr
     int command_bits;
 
     if (get_next_token(line, index, text_in_end_of_line)) {
-        print_error(program_information, "excepted end of line but found %s", text_in_end_of_line);
-        program_information->is_in_error = 1;
+        handle_error(program_information, program_information->source_line_number, "excepted end of line but found %s",
+                     text_in_end_of_line);
         return;
     }
     command_bits = get_command_bits(op, NULL, NULL);

@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "utils.h"
 #include "list.h"
+#include "error_handling.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -71,7 +72,10 @@ void fill_command_line(CommandLine *command_line, ProgramInformation *program_in
         free(command_line->label);
         command_line->label = NULL;
     } else {
-/*todo:error*/
+        handle_error(program_information, command_line->source_line_number, "label %s is not exists",
+                     command_line->label);
+        free(command_line->label);
+        command_line->label = NULL;
     }
 }
 
@@ -83,8 +87,7 @@ void fill_entry(Entry *entry, ProgramInformation *program_information) {
         real_code_address = get_real_code_address(label_data, program_information);
         entry->code_address = real_code_address;
     } else {
-        printf("entry not exits");
-        program_information->is_in_error = 1;
+        handle_error(program_information, entry->source_line_number, "entry %s does not exits", entry->label);
     }
 }
 

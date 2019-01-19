@@ -37,14 +37,18 @@ int main(int argc, char *argv[]) {
             continue;
         }
         if (program_information->is_in_error) {
-            continue;/*todo:print something?*/
+            printf("There are errors in file %s , not output file produced\n", file_name);
+            continue;
         }
         do_second_stage_for_file(program_information);
 
         if (program_information->is_in_error) {
-            continue;/*todo:print something?*/
+            printf("There are errors in file %s , not output file produced\n", file_name);
+            continue;
         }
         write_files(program_information);
+
+        printf("File %s compiled successfully\n", file_name);
         free_program_information(program_information);
     }
 }

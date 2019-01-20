@@ -31,11 +31,15 @@ AddressingMethodsConstraints *get_addressing_methods_constraints
 
 AddressingMethodsConstraints *get_addressing_methods_constraints_for_one_argument_operation(operation op);
 
-int assert_argument_type(addressing_method addressing_method,
-                         AddressingMethodsConstraints *addressing_methods_constraints,
-                         ProgramInformation *program_information,
-                         operation op,
-                         const char *argument_description);
+void assert_argument_type(addressing_method addressing_method,
+                          AddressingMethodsConstraints *addressing_methods_constraints,
+                          ProgramInformation *program_information,
+                          operation op,
+                          const char *argument_description);
+
+AddressingMethodsConstraints *get_addressing_methods_constraints_for_source_argument(operation op);
+
+AddressingMethodsConstraints *get_addressing_methods_constraints_for_target_argument(operation op);
 
 void put_operation_name(operation op, char *operation_name);
 

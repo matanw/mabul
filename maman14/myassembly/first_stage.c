@@ -296,9 +296,43 @@ AddressingMethodsConstraints *get_addressing_methods_constraints_for_one_argumen
 }
 
 
+AddressingMethodsConstraints *get_addressing_methods_constraints_for_source_argument(operation op) {
+    switch (op) {
+        case Mov:
+        case Cmp:
+        case Add:
+        case Sub:
+            return get_addressing_methods_constraints(1, 1, 1);
+        case Lea:
+            return get_addressing_methods_constraints(0, 1, 0);
+        default:
+            return NULL;/*this is only for avoid warning,
+ * there is no scenario that it will be occurred*/
+    }
+}
+
+AddressingMethodsConstraints *get_addressing_methods_constraints_for_target_argument(operation op) {
+    switch (op) {
+        case Mov:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Cmp:
+            return get_addressing_methods_constraints(1, 1, 1);
+        case Add:
+        case Sub:
+        case Lea:
+            return get_addressing_methods_constraints(0, 1, 1);
+        default:
+            return NULL;/*this is only for avoid warning,
+ * there is no scenario that it will be occurred*/
+    }
+}
+
+
 void handle_operation_with_2_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
     char source_argument[MAX_LINE_LENGTH];
     char target_argument[MAX_LINE_LENGTH];
+    AddressingMethodsConstraints * source_addressing_method_constraints;
+    AddressingMethodsConstraints * target_addressing_method_constraints;
     int command_bits;
     ArgumentDetails source_argument_details, target_argument_details;
     if (!read_two_arguments(line, index, source_argument, target_argument)) {
@@ -322,6 +356,12 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
                      source_argument);
         return;
     }
+    source_addressing_method_constraints=get_addressing_methods_constraints_for_source_argument(op);
+    assert_argument_type(source_argument_details.ad_method,source_addressing_method_constraints,
+                         program_information,op,"source argument");
+    target_addressing_method_constraints=get_addressing_methods_constraints_for_target_argument(op);
+    assert_argument_type(target_argument_details.ad_method,target_addressing_method_constraints,
+                         program_information,op,"target argument");
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));
@@ -413,8 +453,7 @@ void put_addressing_method_name(addressing_method addressing_method, char *addre
     }
 }
 
-/*return 1 on error*/
-int assert_argument_type(addressing_method addressing_method,
+void assert_argument_type(addressing_method addressing_method,
                          AddressingMethodsConstraints *addressing_methods_constraints,
                          ProgramInformation *program_information,
                          operation op,
@@ -432,9 +471,7 @@ int assert_argument_type(addressing_method addressing_method,
         handle_error(program_information, program_information->source_line_number,
                      "%s of operation '%s' cannot be in  %s addressing method",
                      argument_description, operation_name, addressing_method_name);
-        return 1;
     }
-    return 0;
 }
 
 void
@@ -462,12 +499,8 @@ handle_operation_with_1_argument(operation op, char *line, int *index, ProgramIn
     addressing_methods_constraints =
             get_addressing_methods_constraints_for_one_argument_operation(op);
 
-
-    if (assert_argument_type(argument_details.ad_method,
-                             addressing_methods_constraints, program_information, op, "argument")) {
-        return;
-    }
-
+    assert_argument_type(argument_details.ad_method,
+                             addressing_methods_constraints, program_information, op, "argument");
     command_bits = get_command_bits(op, NULL, &argument_details);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));

@@ -41,7 +41,7 @@ void fill_address(CommandLine *command_line, int address) {
     put_bits(&command_line->bits, address, LABEL_POSITION);
 }
 
-int compare_label_data_to_string2(LabelData *label_data, char *label) {/*todo: same function exists in first_stage*/
+int compare_label_data_to_string(LabelData *label_data, char *label) {
     return strcmp(label_data->label, label);
 }
 
@@ -66,7 +66,7 @@ void fill_command_line(CommandLine *command_line, ProgramInformation *program_in
     if (command_line->label == NULL) {
         fill_are(command_line, Absolute);
     } else if ((label_data = search(program_information->label_datas, command_line->label,
-                                    (int (*)(void *, void *)) compare_label_data_to_string2))) {
+                                    (int (*)(void *, void *)) compare_label_data_to_string))) {
         int real_code_address;
         real_code_address = get_real_code_address(label_data, program_information);
         fill_address(command_line, real_code_address);
@@ -93,7 +93,7 @@ void fill_command_line(CommandLine *command_line, ProgramInformation *program_in
 void fill_entry(Entry *entry, ProgramInformation *program_information) {
     LabelData *label_data;
     if ((label_data = search(program_information->label_datas, entry->label,
-                             (int (*)(void *, void *)) compare_label_data_to_string2))) {
+                             (int (*)(void *, void *)) compare_label_data_to_string))) {
         int real_code_address;
         real_code_address = get_real_code_address(label_data, program_information);
         entry->code_address = real_code_address;

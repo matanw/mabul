@@ -17,3 +17,12 @@ char *get_string_copy(char *str) {
     strcpy(res, str);
     return res;
 }
+
+
+char get_last_char(char *string) {
+    return string[strlen(string) - 1];
+}
+
+void delete_last_char(char *string) {
+    string[strlen(string) - 1] = '\0';
+}

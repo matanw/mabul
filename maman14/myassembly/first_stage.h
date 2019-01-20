@@ -80,8 +80,6 @@ Entry *get_entry(char *label, int source_line_number);
 
 int *get_copy_of_int(int num);
 
-int compare_label_data_to_string(LabelData *label_data, char *label);
-
 operation get_operation(char *op);
 
 int fill_argument_details(char *token, ArgumentDetails *argument_details);

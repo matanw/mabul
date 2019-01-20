@@ -534,10 +534,6 @@ CommandLine *get_command_line(int bits, int source_line_number, char *label) {
     return command_line;
 }
 
-int compare_label_data_to_string(LabelData *label_data, char *label) {
-    return strcmp(label_data->label, label);
-}
-
 operation get_operation(char *op) {
     if (strcmp("mov", op) == 0) {
         return Mov;

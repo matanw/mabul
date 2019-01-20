@@ -138,10 +138,3 @@ int get_string(char *input, int *index, char *token) {
     }
 }
 
-char get_last_char(char *string) {/*todo : is need to move?*/
-    return string[strlen(string) - 1];
-}
-
-void delete_last_char(char *string) {/*todo : is need to move?*/
-    string[strlen(string) - 1] = '\0';
-}

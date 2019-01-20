@@ -37,17 +37,17 @@ void print_external_record(ExternalRecord *external_record) {
 void print_program_information(ProgramInformation *program_information) {
     printf("file name:%s\n",program_information->file_name);
     printf("command_lines:\n");
-    for_each(program_information->command_lines, (void (*)(void *)) print_command_line);
+    poor_for_each(program_information->command_lines, (void (*)(void *)) print_command_line);
     printf("labels :\n");
-    for_each(program_information->label_datas, (void (*)(void *)) print_label_data);
+    poor_for_each(program_information->label_datas, (void (*)(void *)) print_label_data);
     printf("data_lines:\n");
-    for_each(program_information->data_lines, (void (*)(void *)) print_num);
+    poor_for_each(program_information->data_lines, (void (*)(void *)) print_num);
     printf("entries:\n");
-    for_each(program_information->entries, (void (*)(void *)) print_entry);
+    poor_for_each(program_information->entries, (void (*)(void *)) print_entry);
     printf("externals:\n");
-    for_each(program_information->external, (void (*)(void *)) print_string);
+    poor_for_each(program_information->external, (void (*)(void *)) print_string);
     printf("external records:\n");
-    for_each(program_information->external_records, (void (*)(void *)) print_external_record);
+    poor_for_each(program_information->external_records, (void (*)(void *)) print_external_record);
 }
 
 

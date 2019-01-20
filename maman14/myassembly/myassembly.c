@@ -17,6 +17,7 @@ int get_is_debug_mode(int argc, char *argv[]) {
     return 0;
 }
 
+
 int main(int argc, char *argv[]) {
     int i;
     int is_debug_mode;

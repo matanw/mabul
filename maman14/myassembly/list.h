@@ -18,11 +18,11 @@ List *init_list();
 
 void add(List *list, void *val);
 
-void for_each(List *list, void (*action)(void *));
+void poor_for_each(List *list, void (*action)(void *));
 
-void for_each_with_aside_var(List *list, void (*action)(void *, void *), void *aside_var);
+void for_each(List *list, void (*action)(void *, void *), void *aside_var);
 
-void for_each_with_aside_var_B(List *list, void (*action)(void *, void *, int), void *aside_var);
+void for_each_with_index(List *list, void (*action)(void *, void *, int), void *aside_var);
 
 void for_each_on_cartesian_product(List *list1, List *list2,
                                    void (*action)(void *, void *, void *), void *aside_var);

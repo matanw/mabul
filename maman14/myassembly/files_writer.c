@@ -29,12 +29,12 @@ int write_object_file(ProgramInformation *program_information) {
     }
     write_object_file_header(program_information, object_file
     );
-    for_each_with_aside_var(program_information
-                                    ->command_lines, (void (*)(void *, void *)) write_command_line_in_base64,
-                            object_file);
-    for_each_with_aside_var(program_information
-                                    ->data_lines, (void (*)(void *, void *)) write_bits_in_base64,
-                            object_file);
+    for_each(program_information
+                     ->command_lines, (void (*)(void *, void *)) write_command_line_in_base64,
+             object_file);
+    for_each(program_information
+                     ->data_lines, (void (*)(void *, void *)) write_bits_in_base64,
+             object_file);
     fclose(object_file);
     return 1;
 }
@@ -53,9 +53,9 @@ int write_entries_file(ProgramInformation *program_information) {
     if (entries_file == NULL) {
         return 0;
     }
-    for_each_with_aside_var(program_information
-                                    ->entries, (void (*)(void *, void *)) write_entry,
-                            entries_file);
+    for_each(program_information
+                     ->entries, (void (*)(void *, void *)) write_entry,
+             entries_file);
     fclose(entries_file);
     return 1;
 }
@@ -73,9 +73,9 @@ int write_externals_file(ProgramInformation *program_information) {
     if (externals_file == NULL) {
         return 0;
     }
-    for_each_with_aside_var(program_information
-                                    ->external_records, (void (*)(void *, void *)) write_external_record,
-                            externals_file);
+    for_each(program_information
+                     ->external_records, (void (*)(void *, void *)) write_external_record,
+             externals_file);
     fclose(externals_file);
     return 1;
 }

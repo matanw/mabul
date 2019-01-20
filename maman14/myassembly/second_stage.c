@@ -20,10 +20,10 @@ void do_second_stage_for_file(ProgramInformation *program_information) {
                                   (void (*)(void *, void *, void *)) assert_label_and_external_not_equals,
                                   program_information);
 
-    for_each_with_aside_var_B(program_information->command_lines,
+    for_each_with_index(program_information->command_lines,
                               (void (*)(void *, void *, int)) fill_command_line,
                               program_information);
-    for_each_with_aside_var(program_information->entries,
+    for_each(program_information->entries,
                             (void (*)(void *, void *)) fill_entry,
                             program_information);
 

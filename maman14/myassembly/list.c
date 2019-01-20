@@ -25,7 +25,7 @@ void add(List *list, void *val) {
     list->count++;
 }
 
-void for_each(List *list, void (*action)(void *)) {
+void poor_for_each(List *list, void (*action)(void *)) {
     Node *pos = list->first;
     while (pos != NULL) {
         action(pos->val);
@@ -33,7 +33,7 @@ void for_each(List *list, void (*action)(void *)) {
     }
 }
 
-void for_each_with_aside_var(List *list, void (*action)(void *, void *), void *aside_var) {
+void for_each(List *list, void (*action)(void *, void *), void *aside_var) {
     Node *pos = list->first;
     while (pos != NULL) {
         action(pos->val, aside_var);
@@ -41,8 +41,7 @@ void for_each_with_aside_var(List *list, void (*action)(void *, void *), void *a
     }
 }
 
-/*todo:merge 2 for each es*/
-void for_each_with_aside_var_B(List *list, void (*action)(void *, void *, int), void *aside_var) {
+void for_each_with_index(List *list, void (*action)(void *, void *, int), void *aside_var) {
     int i = 0;
     Node *pos = list->first;
     while (pos != NULL) {

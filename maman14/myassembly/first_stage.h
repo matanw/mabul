@@ -19,6 +19,28 @@ typedef struct argument_details {
     char *label;
 } ArgumentDetails;
 
+typedef struct addressing_methods_constraints {
+    unsigned int is_immediate_addressing_valid:1;
+    unsigned int is_direct_addressing_valid:1;
+    unsigned int is_register_addressing_valid:1;
+} AddressingMethodsConstraints;
+
+AddressingMethodsConstraints *get_addressing_methods_constraints
+        (unsigned int is_immediate_addressing_valid, unsigned int is_direct_addressing_valid,
+         unsigned int is_register_addressing_valid);
+
+AddressingMethodsConstraints *get_addressing_methods_constraints_for_one_argument_operation(operation op);
+
+int assert_argument_type(addressing_method addressing_method,
+                         AddressingMethodsConstraints *addressing_methods_constraints,
+                         ProgramInformation *program_information,
+                         operation op,
+                         const char *argument_description);
+
+void put_operation_name(operation op, char *operation_name);
+
+void put_addressing_method_name(addressing_method addressing_method, char *addressing_method_name);
+
 ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode);
 
 ProgramInformation *init_program_information(char *file_name, int is_debug_mode);

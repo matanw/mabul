@@ -259,6 +259,43 @@ int get_arguments_number(operation op) {
     }
 }
 
+AddressingMethodsConstraints
+*get_addressing_methods_constraints(unsigned int is_immediate_addressing_valid, unsigned int is_direct_addressing_valid,
+                                    unsigned int is_register_addressing_valid) {
+    AddressingMethodsConstraints *addressing_methods_constraints = malloc(sizeof(AddressingMethodsConstraints));
+    addressing_methods_constraints->is_immediate_addressing_valid = is_immediate_addressing_valid;
+    addressing_methods_constraints->is_direct_addressing_valid = is_direct_addressing_valid;
+    addressing_methods_constraints->is_register_addressing_valid = is_register_addressing_valid;
+    return addressing_methods_constraints;
+}
+
+AddressingMethodsConstraints *get_addressing_methods_constraints_for_one_argument_operation(operation op) {
+    switch (op) {
+        case Not:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Clr:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Inc:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Dec:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Jmp:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Bne:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Red:
+            return get_addressing_methods_constraints(0, 1, 1);
+        case Prn:
+            return get_addressing_methods_constraints(1, 1, 1);
+        case Jsr:
+            return get_addressing_methods_constraints(0, 1, 1);
+        default:
+            return NULL;/*this is only for avoid warning,
+ * there is no scenario that it will be occurred*/
+    }
+}
+
+
 void handle_operation_with_2_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
     char source_argument[MAX_LINE_LENGTH];
     char target_argument[MAX_LINE_LENGTH];
@@ -307,10 +344,105 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
     }
 }
 
-void handle_operation_with_1_argument(operation op, char *line, int *index, ProgramInformation *program_information) {
+void put_operation_name(operation op, char *operation_name) {
+    switch (op) {
+        case Mov :
+            strcpy(operation_name, "mov");
+            break;
+        case Cmp :
+            strcpy(operation_name, "cmp");
+            break;
+        case Add  :
+            strcpy(operation_name, "add");
+            break;
+        case Sub  :
+            strcpy(operation_name, "sub");
+            break;
+        case Not :
+            strcpy(operation_name, "not");
+            break;
+        case Clr  :
+            strcpy(operation_name, "clr");
+            break;
+        case Lea :
+            strcpy(operation_name, "lea");
+            break;
+        case Inc  :
+            strcpy(operation_name, "inc");
+            break;
+        case Dec  :
+            strcpy(operation_name, "dec");
+            break;
+        case Jmp  :
+            strcpy(operation_name, "jmp");
+            break;
+        case Bne  :
+            strcpy(operation_name, "bne");
+            break;
+        case Red  :
+            strcpy(operation_name, "red");
+            break;
+        case Prn  :
+            strcpy(operation_name, "prn");
+            break;
+        case Jsr :
+            strcpy(operation_name, "jsr");
+            break;
+        case Rst  :
+            strcpy(operation_name, "res");
+            break;
+        case Stop  :
+            strcpy(operation_name, "stop");
+            break;
+        case Unknown:
+            strcpy(operation_name, "--");/*only to avoid warning*/
+    }
+
+}
+
+void put_addressing_method_name(addressing_method addressing_method, char *addressing_method_name) {
+    switch (addressing_method) {
+        case ImmediateAddressing  :
+            strcpy(addressing_method_name, "immediate");
+            break;
+        case DirectAddressing :
+            strcpy(addressing_method_name, "direct");
+            break;
+        case RegisterAddressing :
+            strcpy(addressing_method_name, "register");
+    }
+}
+
+/*return 1 on error*/
+int assert_argument_type(addressing_method addressing_method,
+                         AddressingMethodsConstraints *addressing_methods_constraints,
+                         ProgramInformation *program_information,
+                         operation op,
+                         const char *argument_description) {
+    if ((addressing_method == ImmediateAddressing
+         && !addressing_methods_constraints->is_immediate_addressing_valid) ||
+        (addressing_method == DirectAddressing
+         && !addressing_methods_constraints->is_direct_addressing_valid) ||
+        (addressing_method == RegisterAddressing
+         && !addressing_methods_constraints->is_register_addressing_valid)) {
+        char operation_name[OPERATION_NAME_LENGTH];
+        char addressing_method_name[ADDRESSING_METHOD_NAME_LENGTH];
+        put_operation_name(op, operation_name);
+        put_addressing_method_name(addressing_method, addressing_method_name);
+        handle_error(program_information, program_information->source_line_number,
+                     "%s of operation '%s' cannot be in  %s addressing method",
+                     argument_description, operation_name, addressing_method_name);
+        return 1;
+    }
+    return 0;
+}
+
+void
+handle_operation_with_1_argument(operation op, char *line, int *index, ProgramInformation *program_information) {
     char argument[MAX_LINE_LENGTH];
     int command_bits, argument_bits;
     ArgumentDetails argument_details;
+    AddressingMethodsConstraints *addressing_methods_constraints;
     if (!get_next_token(line, index, argument)) {
         handle_error(program_information, program_information->source_line_number,
                      "except to argument but there isn't");
@@ -322,11 +454,20 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Prog
         return;
     }
     if (get_next_token(line, index, argument)) {/*todo:another var?*/
-        handle_error(program_information, program_information->source_line_number, "excepted end of line but found %s",
+        handle_error(program_information, program_information->source_line_number,
+                     "excepted end of line but found %s",
                      argument);
-        program_information->is_in_error = 1;
         return;
     }
+    addressing_methods_constraints =
+            get_addressing_methods_constraints_for_one_argument_operation(op);
+
+
+    if (assert_argument_type(argument_details.ad_method,
+                             addressing_methods_constraints, program_information, op, "argument")) {
+        return;
+    }
+
     command_bits = get_command_bits(op, NULL, &argument_details);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));
@@ -336,12 +477,14 @@ void handle_operation_with_1_argument(operation op, char *line, int *index, Prog
                          argument_details.label));
 }
 
-void handle_operation_without_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
+void
+handle_operation_without_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
     char text_in_end_of_line[MAX_LINE_LENGTH];
     int command_bits;
 
     if (get_next_token(line, index, text_in_end_of_line)) {
-        handle_error(program_information, program_information->source_line_number, "excepted end of line but found %s",
+        handle_error(program_information, program_information->source_line_number,
+                     "excepted end of line but found %s",
                      text_in_end_of_line);
         return;
     }

@@ -40,12 +40,20 @@ int main() {
         node = get_node();
         add_to_list(list, node);
         printf("Stop get yards?'y' –yes , stop, 'n'-no,continue");
-        scanf("%c ", &stop_get);
+        scanf(" %c", &stop_get);
     }
     print_list(list);
     opposite_list(list);
     print_list(list);
     free_list(list);
+    return 0;
+}
+
+int main1() {
+    YardNode *pos;
+    pos = get_node();
+    printf("id %d, street %s, area %f park %c\n", pos->id, pos->street_name, pos->area, pos->parking);
+
     return 0;
 }
 
@@ -57,13 +65,13 @@ YardsList *init_list() {
 
 YardNode *get_node() {
     YardNode *node = (YardNode *) malloc(sizeof(YardNode));
-    printf("Enter id");
+    printf("Enter id:\n");
     scanf("%d", &(node->id));
-    printf("Enter street name");
+    printf("Enter street name:\n");
     scanf("%s", node->street_name);
-    printf("Enter parking –y/n");
-    scanf("%c ", &(node->parking));
-    printf("Enter area");
+    printf("Enter parking –y/n:\n");
+    scanf(" %c", &(node->parking));
+    printf("Enter area:\n");
     scanf("%f", &(node->area));
     node->next = NULL;
     return node;
@@ -84,6 +92,7 @@ void add_to_list(YardsList *list, YardNode *node) {
 void opposite_list(YardsList *list) {
     YardNode *pos1 = list->head;
     YardNode *pos2 = pos1->next;
+    YardNode *new_head = pos2;
     while (pos2 != list->head) {
         YardNode *temp;
         temp = pos2->next;
@@ -92,7 +101,9 @@ void opposite_list(YardsList *list) {
         pos2 = temp;
     }
     pos2->next = pos1;
+    list->head = new_head;
 }
+
 
 void free_list(YardsList *list) {
     YardNode *pos1 = list->head;
@@ -107,11 +118,13 @@ void free_list(YardsList *list) {
 
 void print_list(YardsList *list) {
     YardNode *pos = list->head->next;
-
     printf("list is:\n");
+
     while (pos != list->head) {
         printf("id %d, street %s, area %f park %c\n", pos->id, pos->street_name, pos->area, pos->parking);
         pos = pos->next;
 
     }
+    printf("id %d, street %s, area %f park %c\n", pos->id, pos->street_name, pos->area, pos->parking);
+
 }

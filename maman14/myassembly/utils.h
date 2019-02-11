@@ -3,9 +3,11 @@
 
 #include <stdio.h>
 
-FILE *fopen_with_extension(char *filename, char *extension, char *mode);
 
-char *get_string_copy(char *str);
+/* open a file with filename and extension in specific mode*/
+FILE *open_file(char *filename, char *extension, char *mode);
+
+char *get_copy_of_string(char *str);
 
 
 char get_last_char(char *string);

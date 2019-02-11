@@ -3,6 +3,7 @@
 
 #include "list.h"
 
+/*todo: documentation*/
 typedef struct command_line {
     int bits;
     int source_line_number;
@@ -31,8 +32,8 @@ typedef struct external_record {
     int code_address;
 } ExternalRecord;
 typedef struct program_information {
-    int is_debug_mode;
-    List *command_lines;
+    int is_debug_mode; /*is need torint debug prints*/
+    List *command_lines; /*list of */
     List *data_lines;
     List *label_datas;
     List *entries;
@@ -40,7 +41,7 @@ typedef struct program_information {
     List *external_records;
     char *file_name;
     int source_line_number;
-    int is_in_error;
+    int is_in_error;/* 1 if we found in error in source file, 0 otherwise*/
 } ProgramInformation;
 
 #endif

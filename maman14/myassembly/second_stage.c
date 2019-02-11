@@ -9,29 +9,9 @@
 #include <stdio.h>
 #include <string.h>
 
-void do_second_stage_for_file(ProgramInformation *program_information) {
-    for_each_on_cartesian_product(program_information->label_datas,
-                                  program_information->label_datas,
-                                  (void (*)(void *, void *, void *)) assert_duplication_labels,
-                                  program_information);
-
-    for_each_on_cartesian_product(program_information->label_datas,
-                                  program_information->external,
-                                  (void (*)(void *, void *, void *)) assert_label_and_external_not_equals,
-                                  program_information);
-
-    for_each_with_index(program_information->command_lines,
-                              (void (*)(void *, void *, int)) fill_command_line,
-                              program_information);
-    for_each(program_information->entries,
-                            (void (*)(void *, void *)) fill_entry,
-                            program_information);
-
-    if (program_information->is_debug_mode) {
-        printf("***after second stage:***\n");
-        print_program_information(program_information);
-    }
-}
+typedef enum ARE {
+    Absolute = 0, Relocatable = 2, External = 1
+} are;
 
 void fill_are(CommandLine *command_line, are are) {
     put_bits(&command_line->bits, are, ARE_POSITION);
@@ -78,7 +58,7 @@ void fill_command_line(CommandLine *command_line, ProgramInformation *program_in
         int real_code_address;
         real_code_address = INITIAL_CODE_ADDRESS + index;
         add(program_information->external_records, get_external_record
-                (get_string_copy(command_line->label), real_code_address));
+                (get_copy_of_string(command_line->label), real_code_address));
         fill_are(command_line, External);
         free(command_line->label);
         command_line->label = NULL;
@@ -120,3 +100,34 @@ void assert_label_and_external_not_equals(LabelData *label_data, char *external,
                      "it defined as .extern", label_data->label);
     }
 }
+
+
+void do_second_stage_for_file(ProgramInformation *program_information) {
+    /*assert that there is no duplication in label*/
+    for_each_on_cartesian_product(program_information->label_datas,
+                                  program_information->label_datas,
+                                  (void (*)(void *, void *, void *)) assert_duplication_labels,
+                                  program_information);
+
+    /*assert that there is overload betqween label and externals*/
+    for_each_on_cartesian_product(program_information->label_datas,
+                                  program_information->external,
+                                  (void (*)(void *, void *, void *)) assert_label_and_external_not_equals,
+                                  program_information);
+
+    /*fill the missing information in command line*/
+    for_each_with_index(program_information->command_lines,
+                        (void (*)(void *, void *, int)) fill_command_line,
+                        program_information);
+
+    /*fill the missing information in entry*/
+    for_each(program_information->entries,
+             (void (*)(void *, void *)) fill_entry,
+             program_information);
+
+    if (program_information->is_debug_mode) {
+        printf("***after second stage:***\n");
+        print_program_information(program_information);
+    }
+}
+

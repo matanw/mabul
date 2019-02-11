@@ -1,8 +1,8 @@
-#include "constants.h"
+
 #include "debug_utils.h"
 #include "bits_operations.h"
 #include <stdio.h>
-
+#include "list.h"
 void print_command_line(CommandLine *commandLine) {
     printf("%d:", commandLine->source_line_number);
     print_bits(commandLine->bits);
@@ -34,6 +34,7 @@ void print_external_record(ExternalRecord *external_record) {
     printf("%s - %d\n", external_record->label, external_record->code_address);
 }
 
+/*print the print_program_information struct, for debugging*/
 void print_program_information(ProgramInformation *program_information) {
     printf("file name:%s\n",program_information->file_name);
     printf("command_lines:\n");

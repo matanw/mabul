@@ -11,10 +11,11 @@
 #include "utils.h"
 #include "error_handling.h"
 
+/*todo:document*/
 ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) {
     char line[MAX_LINE_LENGTH];
     ProgramInformation *program_information;
-    FILE *file = fopen_with_extension(file_name, SOURCE_FILE_EXTENSION, "r");
+    FILE *file = open_file(file_name, SOURCE_FILE_EXTENSION, "r");
     if (file == NULL) {
         return NULL;
     }
@@ -43,7 +44,7 @@ ProgramInformation *init_program_information(char *file_name, int is_debug_mode)
     program_information->external_records = init_list();
     program_information->source_line_number = 0;
     program_information->is_in_error = 0;
-    program_information->file_name = get_string_copy(file_name);
+    program_information->file_name = get_copy_of_string(file_name);
     return program_information;
 
 }
@@ -67,7 +68,7 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
         return;
     }
     if (get_last_char(token) == ':') {
-        label = get_string_copy(token);
+        label = get_copy_of_string(token);
         if (!get_next_token(line, &index, token))/*blank line*/
         {
             handle_error(program_information, program_information->source_line_number, "empty label is illegal");
@@ -106,7 +107,7 @@ void handle_entry(char *line, char *place_to_token, int *index, ProgramInformati
         return;
     }
     add(program_information->entries,
-        get_entry(get_string_copy(place_to_token), program_information->source_line_number));
+        get_entry(get_copy_of_string(place_to_token), program_information->source_line_number));
     if (get_next_token(line, index, place_to_token)) {
         handle_error(program_information, program_information->source_line_number,
                      "expected end of string but found '%s'", place_to_token);
@@ -125,7 +126,7 @@ void handle_extern(char *line, char *place_to_token, int *index, ProgramInformat
                      place_to_token);
         return;
     }
-    add(program_information->external, get_string_copy(place_to_token));
+    add(program_information->external, get_copy_of_string(place_to_token));
     if (get_next_token(line, index, place_to_token)) {
         handle_error(program_information, program_information->source_line_number,
                      "expected end of string but found '%s'", place_to_token);
@@ -331,8 +332,8 @@ AddressingMethodsConstraints *get_addressing_methods_constraints_for_target_argu
 void handle_operation_with_2_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
     char source_argument[MAX_LINE_LENGTH];
     char target_argument[MAX_LINE_LENGTH];
-    AddressingMethodsConstraints * source_addressing_method_constraints;
-    AddressingMethodsConstraints * target_addressing_method_constraints;
+    AddressingMethodsConstraints *source_addressing_method_constraints;
+    AddressingMethodsConstraints *target_addressing_method_constraints;
     int command_bits;
     ArgumentDetails source_argument_details, target_argument_details;
     if (!read_two_arguments(line, index, source_argument, target_argument)) {
@@ -356,12 +357,12 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
                      source_argument);
         return;
     }
-    source_addressing_method_constraints=get_addressing_methods_constraints_for_source_argument(op);
-    assert_argument_type(source_argument_details.ad_method,source_addressing_method_constraints,
-                         program_information,op,"source argument");
-    target_addressing_method_constraints=get_addressing_methods_constraints_for_target_argument(op);
-    assert_argument_type(target_argument_details.ad_method,target_addressing_method_constraints,
-                         program_information,op,"target argument");
+    source_addressing_method_constraints = get_addressing_methods_constraints_for_source_argument(op);
+    assert_argument_type(source_argument_details.ad_method, source_addressing_method_constraints,
+                         program_information, op, "source argument");
+    target_addressing_method_constraints = get_addressing_methods_constraints_for_target_argument(op);
+    assert_argument_type(target_argument_details.ad_method, target_addressing_method_constraints,
+                         program_information, op, "target argument");
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));
@@ -454,10 +455,10 @@ void put_addressing_method_name(addressing_method addressing_method, char *addre
 }
 
 void assert_argument_type(addressing_method addressing_method,
-                         AddressingMethodsConstraints *addressing_methods_constraints,
-                         ProgramInformation *program_information,
-                         operation op,
-                         const char *argument_description) {
+                          AddressingMethodsConstraints *addressing_methods_constraints,
+                          ProgramInformation *program_information,
+                          operation op,
+                          const char *argument_description) {
     if ((addressing_method == ImmediateAddressing
          && !addressing_methods_constraints->is_immediate_addressing_valid) ||
         (addressing_method == DirectAddressing
@@ -500,7 +501,7 @@ handle_operation_with_1_argument(operation op, char *line, int *index, ProgramIn
             get_addressing_methods_constraints_for_one_argument_operation(op);
 
     assert_argument_type(argument_details.ad_method,
-                             addressing_methods_constraints, program_information, op, "argument");
+                         addressing_methods_constraints, program_information, op, "argument");
     command_bits = get_command_bits(op, NULL, &argument_details);
     add(program_information->command_lines,
         get_command_line(command_bits, program_information->source_line_number, NULL));
@@ -600,7 +601,7 @@ int fill_argument_details(char *token, ArgumentDetails *argument_details) {
     if (is_legal_label(token)) {
         argument_details->ad_method = DirectAddressing;
         argument_details->num = 0;
-        argument_details->label = get_string_copy(token);
+        argument_details->label = get_copy_of_string(token);
         return 1;
     }
     return 0;

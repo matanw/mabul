@@ -22,6 +22,8 @@ void free_external_record(ExternalRecord *external_record) {
         free(external_record->label);
 }
 
+
+/*safe free to program_information and all its sub structure*/
 void free_program_information(ProgramInformation *program_information) {
 
     free_list(program_information->command_lines, (void (*)(void *))

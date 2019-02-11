@@ -23,7 +23,7 @@ void write_object_file_header(ProgramInformation *program_information, FILE *obj
 
 int write_object_file(ProgramInformation *program_information) {
     FILE *object_file;
-    object_file = fopen_with_extension(program_information->file_name, OBJECT_FILE_EXTENSION, "w");
+    object_file = open_file(program_information->file_name, OBJECT_FILE_EXTENSION, "w");
     if (object_file == NULL) {
         return 0;
     }
@@ -49,7 +49,7 @@ int write_entries_file(ProgramInformation *program_information) {
     if (program_information->entries->count == 0) {
         return 1;
     }
-    entries_file = fopen_with_extension(program_information->file_name, ENTRIES_FILE_EXTENSION, "w");
+    entries_file = open_file(program_information->file_name, ENTRIES_FILE_EXTENSION, "w");
     if (entries_file == NULL) {
         return 0;
     }
@@ -69,7 +69,7 @@ int write_externals_file(ProgramInformation *program_information) {
     if (program_information->entries->count == 0) {
         return 1;
     }
-    externals_file = fopen_with_extension(program_information->file_name, EXTERNAL_FILE_EXTENSION, "w");
+    externals_file = open_file(program_information->file_name, EXTERNAL_FILE_EXTENSION, "w");
     if (externals_file == NULL) {
         return 0;
     }
@@ -80,6 +80,8 @@ int write_externals_file(ProgramInformation *program_information) {
     return 1;
 }
 
+
+/*gets a valid program_information and write the out files to disk*/
 int write_files(ProgramInformation *program_information) {
     write_object_file(program_information);
     write_entries_file(program_information);

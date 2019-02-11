@@ -52,4 +52,5 @@ int main(int argc, char *argv[]) {
         printf("File %s compiled successfully\n", file_name);
         free_program_information(program_information);
     }
+    return 0;
 }

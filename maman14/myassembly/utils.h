@@ -14,4 +14,6 @@ char get_last_char(char *string);
 
 void delete_last_char(char *string);
 
+int *get_copy_of_int(int num);
+
 #endif

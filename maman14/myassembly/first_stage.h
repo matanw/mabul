@@ -19,6 +19,7 @@ typedef struct argument_details {
     char *label;
 } ArgumentDetails;
 
+/* constrains of addressing method*/
 typedef struct addressing_methods_constraints {
     unsigned int is_immediate_addressing_valid:1;
     unsigned int is_direct_addressing_valid:1;
@@ -31,11 +32,11 @@ AddressingMethodsConstraints *get_addressing_methods_constraints
 
 AddressingMethodsConstraints *get_addressing_methods_constraints_for_one_argument_operation(operation op);
 
-void assert_argument_type(addressing_method addressing_method,
-                          AddressingMethodsConstraints *addressing_methods_constraints,
-                          ProgramInformation *program_information,
-                          operation op,
-                          const char *argument_description);
+void assert_addressing_method(addressing_method addressing_method,
+                              AddressingMethodsConstraints *addressing_methods_constraints,
+                              ProgramInformation *program_information,
+                              operation op,
+                              const char *argument_description);
 
 AddressingMethodsConstraints *get_addressing_methods_constraints_for_source_argument(operation op);
 
@@ -78,8 +79,6 @@ CommandLine *get_command_line(int bits, int source_line_number, char *label);
 
 Entry *get_entry(char *label, int source_line_number);
 
-int *get_copy_of_int(int num);
-
 operation get_operation(char *op);
 
 int fill_argument_details(char *token, ArgumentDetails *argument_details);
@@ -96,7 +95,7 @@ int get_two_registers_bits(ArgumentDetails *source_argument_details,
 int get_argument_bits(ArgumentDetails *argument_details,
                       int is_source);
 
-int line_is_comment(char *line, int *index);
+int is_line_a_comment(char *line, int *index);
 
 
 #endif

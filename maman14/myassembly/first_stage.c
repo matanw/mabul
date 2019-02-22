@@ -11,7 +11,9 @@
 #include "utils.h"
 #include "error_handling.h"
 
-/*todo:document*/
+/*do this first stage (מעבר ראשון) on the file.
+ * first stage read the file line by line and parse every line by itself,
+ * without reference to other lines*/
 ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) {
     char line[MAX_LINE_LENGTH];
     ProgramInformation *program_information;
@@ -33,6 +35,7 @@ ProgramInformation *do_first_stage_for_file(char *file_name, int is_debug_mode) 
     return program_information;
 }
 
+/*initialize the ProgramInformation sturct*/
 ProgramInformation *init_program_information(char *file_name, int is_debug_mode) {
     ProgramInformation *program_information = malloc(sizeof(ProgramInformation));
     program_information->is_debug_mode = is_debug_mode;
@@ -48,11 +51,12 @@ ProgramInformation *init_program_information(char *file_name, int is_debug_mode)
     return program_information;
 
 }
-
-int line_is_comment(char *line, int *index) {
+ /*return 1 if line is a comment, 0 otherwise*/
+int is_line_a_comment(char *line, int *index) {
     return expect_next_char(line, index, ';');
 }
 
+/* do the first stage for a single line*/
 void do_first_stage_for_line(char *line, ProgramInformation *program_information) {
     char token[MAX_LINE_LENGTH];
     int old_command_lines_count = program_information->command_lines->count;
@@ -60,7 +64,7 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
     char *label = NULL;
     section_type section_type;
     int index = 0;
-    if (line_is_comment(line, &index)) {
+    if (is_line_a_comment(line, &index)) {
         return;
     }
     if (!get_next_token(line, &index, token))/*blank line*/
@@ -95,6 +99,7 @@ void do_first_stage_for_line(char *line, ProgramInformation *program_information
     handle_label(label, section_type, old_command_lines_count, old_data_lines_count, program_information);
 }
 
+/* update the ProgramInformation structure from line of  type ".entry"*/
 void handle_entry(char *line, char *place_to_token, int *index, ProgramInformation *program_information) {
     if (!get_next_token(line, index, place_to_token)) {
         handle_error(program_information, program_information->source_line_number,
@@ -115,6 +120,8 @@ void handle_entry(char *line, char *place_to_token, int *index, ProgramInformati
     }
 }
 
+
+/* update the ProgramInformation structure from line of  type ".extern"*/
 void handle_extern(char *line, char *place_to_token, int *index, ProgramInformation *program_information) {
     if (!get_next_token(line, index, place_to_token)) {
         handle_error(program_information, program_information->source_line_number,
@@ -135,6 +142,8 @@ void handle_extern(char *line, char *place_to_token, int *index, ProgramInformat
     }
 }
 
+
+/* update the ProgramInformation structure from line with label (in addition to handle the logic of line)*/
 void handle_label(char *label, section_type section_type, int old_command_lines_count, int old_data_lines_count,
                   ProgramInformation *program_information) {
     LabelData *label_data;
@@ -157,6 +166,8 @@ void handle_label(char *label, section_type section_type, int old_command_lines_
     add(program_information->label_datas, label_data);
 }
 
+
+/* update the ProgramInformation structure from line of  type ".data"*/
 void handle_numbers(char *place_to_token, char *line, int *index, ProgramInformation *program_information) {
     int num;
     if (!get_next_token(line, index, place_to_token)) {
@@ -197,6 +208,8 @@ void handle_numbers(char *place_to_token, char *line, int *index, ProgramInforma
     }
 }
 
+
+/* update the ProgramInformation structure from line of  type ".string"*/
 void handle_string(char *place_to_token, char *line, int *index, ProgramInformation *program_information) {
     char *c;
     if (!get_string(line, index, place_to_token)) {
@@ -216,6 +229,8 @@ void handle_string(char *place_to_token, char *line, int *index, ProgramInformat
     add(program_information->data_lines, get_copy_of_int(0));
 }
 
+
+/* update the ProgramInformation structure from line of operation (mov, inc, etc)*/
 void handle_operation(char *token, char *line, int *index, ProgramInformation *program_information) {
     operation op;
     int arguments_num;
@@ -237,6 +252,9 @@ void handle_operation(char *token, char *line, int *index, ProgramInformation *p
     }
 }
 
+
+
+/* get the arguments number for operation*/
 int get_arguments_number(operation op) {
     switch (op) {
         case Mov:
@@ -260,6 +278,7 @@ int get_arguments_number(operation op) {
     }
 }
 
+/* create an AddressingMethodsConstraints*/
 AddressingMethodsConstraints
 *get_addressing_methods_constraints(unsigned int is_immediate_addressing_valid, unsigned int is_direct_addressing_valid,
                                     unsigned int is_register_addressing_valid) {
@@ -270,6 +289,7 @@ AddressingMethodsConstraints
     return addressing_methods_constraints;
 }
 
+/* get the constraints of argument for operation that accepts one argument*/
 AddressingMethodsConstraints *get_addressing_methods_constraints_for_one_argument_operation(operation op) {
     switch (op) {
         case Not:
@@ -297,6 +317,7 @@ AddressingMethodsConstraints *get_addressing_methods_constraints_for_one_argumen
 }
 
 
+/* get the constraints of source argument for operation that accepts two arguments*/
 AddressingMethodsConstraints *get_addressing_methods_constraints_for_source_argument(operation op) {
     switch (op) {
         case Mov:
@@ -312,6 +333,8 @@ AddressingMethodsConstraints *get_addressing_methods_constraints_for_source_argu
     }
 }
 
+
+/* get the constraints of target argument for operation that accepts two arguments*/
 AddressingMethodsConstraints *get_addressing_methods_constraints_for_target_argument(operation op) {
     switch (op) {
         case Mov:
@@ -329,6 +352,8 @@ AddressingMethodsConstraints *get_addressing_methods_constraints_for_target_argu
 }
 
 
+
+/* update the ProgramInformation structure from line of operation that accept two arguments*/
 void handle_operation_with_2_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
     char source_argument[MAX_LINE_LENGTH];
     char target_argument[MAX_LINE_LENGTH];
@@ -358,10 +383,10 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
         return;
     }
     source_addressing_method_constraints = get_addressing_methods_constraints_for_source_argument(op);
-    assert_argument_type(source_argument_details.ad_method, source_addressing_method_constraints,
+    assert_addressing_method(source_argument_details.ad_method, source_addressing_method_constraints,
                          program_information, op, "source argument");
     target_addressing_method_constraints = get_addressing_methods_constraints_for_target_argument(op);
-    assert_argument_type(target_argument_details.ad_method, target_addressing_method_constraints,
+    assert_addressing_method(target_argument_details.ad_method, target_addressing_method_constraints,
                          program_information, op, "target argument");
     command_bits = get_command_bits(op, &source_argument_details, &target_argument_details);
     add(program_information->command_lines,
@@ -385,6 +410,8 @@ void handle_operation_with_2_arguments(operation op, char *line, int *index, Pro
     }
 }
 
+
+/* put the operation name  in operation_name*/
 void put_operation_name(operation op, char *operation_name) {
     switch (op) {
         case Mov :
@@ -441,6 +468,8 @@ void put_operation_name(operation op, char *operation_name) {
 
 }
 
+
+/* put the addressing method name  in addressing_method_name*/
 void put_addressing_method_name(addressing_method addressing_method, char *addressing_method_name) {
     switch (addressing_method) {
         case ImmediateAddressing  :
@@ -454,7 +483,8 @@ void put_addressing_method_name(addressing_method addressing_method, char *addre
     }
 }
 
-void assert_argument_type(addressing_method addressing_method,
+/* assert the the addressing_method is legal to operation*/
+void assert_addressing_method(addressing_method addressing_method,
                           AddressingMethodsConstraints *addressing_methods_constraints,
                           ProgramInformation *program_information,
                           operation op,
@@ -475,8 +505,9 @@ void assert_argument_type(addressing_method addressing_method,
     }
 }
 
-void
-handle_operation_with_1_argument(operation op, char *line, int *index, ProgramInformation *program_information) {
+/* update the ProgramInformation structure from line of operation that accept one argument*/
+void handle_operation_with_1_argument(operation op, char *line,
+        int *index, ProgramInformation *program_information) {
     char argument[MAX_LINE_LENGTH];
     int command_bits, argument_bits;
     ArgumentDetails argument_details;
@@ -500,7 +531,7 @@ handle_operation_with_1_argument(operation op, char *line, int *index, ProgramIn
     addressing_methods_constraints =
             get_addressing_methods_constraints_for_one_argument_operation(op);
 
-    assert_argument_type(argument_details.ad_method,
+    assert_addressing_method(argument_details.ad_method,
                          addressing_methods_constraints, program_information, op, "argument");
     command_bits = get_command_bits(op, NULL, &argument_details);
     add(program_information->command_lines,
@@ -511,8 +542,9 @@ handle_operation_with_1_argument(operation op, char *line, int *index, ProgramIn
                          argument_details.label));
 }
 
-void
-handle_operation_without_arguments(operation op, char *line, int *index, ProgramInformation *program_information) {
+/* update the ProgramInformation structure from line of operation that doesn't accept arguments*/
+void handle_operation_without_arguments(operation op, char *line, int *index,
+        ProgramInformation *program_information) {
     char text_in_end_of_line[MAX_LINE_LENGTH];
     int command_bits;
 
@@ -527,6 +559,7 @@ handle_operation_without_arguments(operation op, char *line, int *index, Program
         get_command_line(command_bits, program_information->source_line_number, NULL));
 }
 
+/**create a commandLine structure*/
 CommandLine *get_command_line(int bits, int source_line_number, char *label) {
     CommandLine *command_line = (CommandLine *) malloc(sizeof(CommandLine));
     command_line->bits = bits;
@@ -535,6 +568,7 @@ CommandLine *get_command_line(int bits, int source_line_number, char *label) {
     return command_line;
 }
 
+/*get an opertaion by string*/
 operation get_operation(char *op) {
     if (strcmp("mov", op) == 0) {
         return Mov;
@@ -587,6 +621,7 @@ operation get_operation(char *op) {
     return Unknown;
 }
 
+/*fill the ArgumentDetails structure from token*/
 int fill_argument_details(char *token, ArgumentDetails *argument_details) {
     if (parse_register(token, &(argument_details->num))) {
         argument_details->ad_method = RegisterAddressing;
@@ -607,6 +642,7 @@ int fill_argument_details(char *token, ArgumentDetails *argument_details) {
     return 0;
 }
 
+/*crate a LabelData structure*/
 LabelData *get_label_data(char *label, int code_address, section_type section_type,
                           int source_line_number) {
     LabelData *label_data;
@@ -618,6 +654,8 @@ LabelData *get_label_data(char *label, int code_address, section_type section_ty
     return label_data;
 }
 
+
+/*crate a Entry structure*/
 Entry *get_entry(char *label, int source_line_number) {
     Entry *entry;
     entry = malloc(sizeof(entry));
@@ -626,12 +664,7 @@ Entry *get_entry(char *label, int source_line_number) {
     return entry;
 }
 
-int *get_copy_of_int(int num) {
-    int *res = malloc(sizeof(int));
-    *res = num;
-    return res;
-}
-
+/* get bits of commands, as int number  (bits of the command itself)*/
 int get_command_bits(operation op, ArgumentDetails *source_argument_details,
                      ArgumentDetails *target_argument_details) {
     int bits = 0;
@@ -648,6 +681,8 @@ int get_command_bits(operation op, ArgumentDetails *source_argument_details,
     return bits;
 }
 
+
+/* get bits of 2 registers in one word*/
 int get_two_registers_bits(ArgumentDetails *source_argument_details,
                            ArgumentDetails *target_argument_details) {
     int bits = 0;
@@ -658,6 +693,8 @@ int get_two_registers_bits(ArgumentDetails *source_argument_details,
     return bits;
 }
 
+
+/* get bits of ab argument*/
 int get_argument_bits(ArgumentDetails *argument_details,
                       int is_source) {
     int bits = 0;

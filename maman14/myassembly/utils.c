@@ -27,3 +27,10 @@ char get_last_char(char *string) {
 void delete_last_char(char *string) {
     string[strlen(string) - 1] = '\0';
 }
+
+
+int *get_copy_of_int(int num) {
+    int *res = malloc(sizeof(int));
+    *res = num;
+    return res;
+}

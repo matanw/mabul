@@ -82,6 +82,15 @@ int parse_number(char *token, int *output) {
 
 /*if token is legal label, returns 1,otherwise returns 0*/
 int is_legal_label(char *token) {
+    if (strcmp("mov", token) == 0 || strcmp("cmp", token) == 0 || strcmp("add", token) == 0 ||
+        strcmp("sub", token) == 0 || strcmp("not", token) == 0 || strcmp("clr", token) == 0 ||
+        strcmp("lea", token) == 0 || strcmp("inc", token) == 0 || strcmp("dec", token) == 0 ||
+        strcmp("jmp", token) == 0 || strcmp("bne", token) == 0 || strcmp("red", token) == 0 ||
+        strcmp("prn", token) == 0 || strcmp("jsr", token) == 0 || strcmp("rts", token) == 0 ||
+        strcmp("stop", token) == 0 || strcmp("data", token) == 0 || strcmp("string", token) == 0 ||
+        strcmp("extern", token) == 0 || strcmp("entry", token) == 0) {
+        return 0;
+    }
     if (!isalpha(*(token++))) {
         return 0;
     }
@@ -90,10 +99,8 @@ int is_legal_label(char *token) {
             return 0;
         }
     }
-    /*todo: compare to saved words*/
     return 1;
 }
-
 
 
 /* if next char is expected_char, returns 1 and move forward *index, otherwise, returns 0*/
@@ -107,7 +114,6 @@ int expect_next_char(char *input, int *index, char expected_char) {
     }
     return 0;
 }
-
 
 
 /*function get pointer to char array (input) and offset (index)

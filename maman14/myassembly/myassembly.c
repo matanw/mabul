@@ -4,6 +4,7 @@
 #include "second_stage.h"
 #include "files_writer.h"
 #include "deallocation.h"
+#include <stdio.h>
 
 #define  DEBUG_FLAG "-d"
 

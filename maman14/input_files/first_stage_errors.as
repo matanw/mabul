@@ -17,3 +17,7 @@ lea 1,@r3
 lea LABEL, 1
 ;wrong source an target
 lea 1,3
+;label start with numbeer
+34e: mov @r1,@r2
+;lebal that is saved word
+data: mov @r1,@r2

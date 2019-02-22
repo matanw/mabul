@@ -18,6 +18,14 @@ bits_operations.o: bits_operations.c bits_operations.h
 command_parse.o: command_parse.c command_parse.h
 	$(COMPILE_COMMAND) command_parse.c
 
+first_stage_simple_handlers.o: first_stage_simple_handlers.c first_stage_simple_handlers.h data_structures.h error_handling.h  command_parse.h  utils.h
+	$(COMPILE_COMMAND) first_stage_simple_handlers.c
+
+first_stage_operation_handlers.o: first_stage_operation_handlers.c first_stage_operation_handlers.h \
+first_stage_operation_handlers_inner.h data_structures.h error_handling.h constants.h \
+ command_parse.h utils.h bits_operations.h list.h
+	$(COMPILE_COMMAND) first_stage_operation_handlers.c
+
 deallocation.o: deallocation.c deallocation.h data_structures.h list.h
 	$(COMPILE_COMMAND) deallocation.c
 
@@ -27,7 +35,7 @@ debug_utils.o: debug_utils.c debug_utils.h constants.h bits_operations.h data_st
 error_handling.o: error_handling.c error_handling.h data_structures.h
 	$(COMPILE_COMMAND) error_handling.c
 
-first_stage.o: first_stage.c first_stage.h list.h data_structures.h error_handling.h  command_parse.h debug_utils.h bits_operations.h utils.h
+first_stage.o: first_stage.c first_stage.h list.h data_structures.h error_handling.h  command_parse.h debug_utils.h bits_operations.h utils.h first_stage_simple_handlers.h first_stage_operation_handlers.h
 	$(COMPILE_COMMAND) first_stage.c
 
 files_writer.o: files_writer.c files_writer.h data_structures.h utils.h constants.h error_handling.h
@@ -45,8 +53,8 @@ second_stage.o: second_stage.c second_stage.h data_structures.h debug_utils.h bi
 myassembly.o:myassembly.c first_stage.h deallocation.h
 	$(COMPILE_COMMAND) myassembly.c
 
-myassembly: myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o error_handling.o
-	gcc -o myassembly myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o error_handling.o
+myassembly: myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o error_handling.o first_stage_simple_handlers.o first_stage_operation_handlers.o
+	gcc -o myassembly myassembly.o bits_operations.o command_parse.o list.o first_stage.o debug_utils.o deallocation.o second_stage.o files_writer.o utils.o error_handling.o first_stage_simple_handlers.o first_stage_operation_handlers.o
 
 clean:
 	rm -f myassembly *.o

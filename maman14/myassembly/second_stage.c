@@ -34,7 +34,7 @@ int get_real_code_address(LabelData *label_data, ProgramInformation *program_inf
 }
 
 ExternalRecord *get_external_record(char *label,
-                                    int code_address) {/*todo: maybe crate *ctor.c*/
+                                    int code_address) {
     ExternalRecord *external_record = (ExternalRecord *) malloc(sizeof(ExternalRecord));
     external_record->label = label;
     external_record->code_address = code_address;

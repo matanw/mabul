@@ -301,7 +301,7 @@ void handle_operation_with_1_argument(operation op, char *line,
                      "'%s' is not register, number, or valid label name", argument);
         return;
     }
-    if (get_next_token(line, index, argument)) {/*todo:another var?*/
+    if (get_next_token(line, index, argument)) {
         handle_error(program_information, program_information->source_line_number,
                      "excepted end of line but found %s",
                      argument);

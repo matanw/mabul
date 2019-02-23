@@ -70,12 +70,12 @@ int parse_register(char *token, int *output) {
 otherwise, returns 0*/
 int parse_number(char *token, int *output) {
     char *ptr;
+    long size_to_module = 1 << 13;
     long num = strtol(token, &ptr, 10);
-    /*todo: check that long in range*/
     if (ptr == token || *ptr != '\0') {
         return 0;
     }
-    *output = num;
+    *output = num % size_to_module;
     return 1;
 }
 

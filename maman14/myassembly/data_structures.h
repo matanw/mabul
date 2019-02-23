@@ -3,7 +3,6 @@
 
 #include "list.h"
 
-/*todo: documentation*/
 typedef struct command_line {
     int bits;
     int source_line_number;
